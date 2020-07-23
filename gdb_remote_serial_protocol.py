@@ -38,20 +38,28 @@ class GdbRemoteSerialProtocol:
             return None
         return None
 
-    def open(self, port):
-        with serial.Serial(port, 38400, timeout=5) as ser:
-            print(port)
-            received = ser.read(6)
-            if validPacket(received):
-                if getReply(received):
-                    ser.write('+'.encode())
-                    return True
+    def connect(self, port):
+        try:
+            with serial.Serial(port, 38400, timeout=5) as ser:
+                received = ser.read(6).decode('UTF-8)')
+                if self.validPacket(received):
+                    if self.getReply(received):
+                        ser.write('+'.encode())
+                        return True
+                return False
+        except Exception as ex:
+            print(ex)
             return False
 
-    def close(self):
+    def disconnect(self):
         ser.close()
 
 
 if __name__ == '__main__':
     gdbServer = GdbRemoteSerialProtocol()
-    print(gdbServer.open('COM8'))
+    if gdbServer.connect('COM8'):
+        print('Probe ready!')
+
+        gdbServer.disconnect()
+    else:
+        print('Failed to open port -> COM8')
