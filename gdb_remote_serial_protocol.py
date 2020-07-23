@@ -3,6 +3,11 @@ import binascii
 
 
 class GdbRemoteSerialProtocol:
+
+    def __init__(self, serial_instance):
+        super().__init__()
+
+        self.serial = serial_instance
     _OK = 'OK'
 
     #
@@ -38,26 +43,26 @@ class GdbRemoteSerialProtocol:
             return None
         return None
 
-    def connect(self, port):
+    def connect(self):
         try:
-            with serial.Serial(port, 38400, timeout=5) as ser:
-                received = ser.read(6).decode('UTF-8)')
-                if self.validPacket(received):
-                    if self.getReply(received):
-                        ser.write('+'.encode())
-                        return True
-                return False
+            received = self.serial.read(6).decode('UTF-8)')
+            if self.validPacket(received):
+                if self.getReply(received):
+                    self.serial.write('+'.encode())
+                    return True
+            return False
         except Exception as ex:
             print(ex)
             return False
 
     def disconnect(self):
-        ser.close()
+        self.serial.close()
 
 
 if __name__ == '__main__':
-    gdbServer = GdbRemoteSerialProtocol()
-    if gdbServer.connect('COM8'):
+    serial_instance = serial.Serial('COM8', 38400, timeout=5)
+    gdbServer = GdbRemoteSerialProtocol(serial_instance)
+    if gdbServer.connect():
         print('Probe ready!')
 
         gdbServer.disconnect()
