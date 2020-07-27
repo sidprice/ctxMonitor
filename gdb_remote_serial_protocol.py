@@ -60,11 +60,11 @@ class GdbRemoteSerialProtocol:
 
 
 if __name__ == '__main__':
-    serial_instance = serial.Serial('COM8', 38400, timeout=5)
+    serial_instance = serial.Serial('COM20', 38400, timeout=5)
     gdbServer = GdbRemoteSerialProtocol(serial_instance)
     if gdbServer.connect():
         print('Probe ready!')
 
         gdbServer.disconnect()
     else:
-        print('Failed to open port -> COM8')
+        print('Failed to open port -> COM20')

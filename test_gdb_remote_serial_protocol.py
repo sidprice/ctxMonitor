@@ -20,7 +20,9 @@ class TestRemoteSerialProtocol(unittest.TestCase):
         #
         _gdbServer = gdbSrv.GdbRemoteSerialProtocol()
         self.assertEqual(_gdbServer.getReply('$OK#9A'), _gdbServer._OK)
-
+        #
+        # The following test REQUIRES an attached BMP/ctxLink
+        #
     def test_connection(self):
         pass
 
