@@ -38,7 +38,7 @@ class GdbRemoteSerialProtocol:
                     return True
         return False
 
-    def readPacket(self):
+    def readPacket(self, skip=False):
         '''
         Data from the probe is either a Response or a Notification.
 
@@ -51,6 +51,7 @@ class GdbRemoteSerialProtocol:
           Notifications are not yet implemented
 
         '''
+        skipSecond = skip
         packet = ''
         state = 0
         while True:
@@ -67,11 +68,14 @@ class GdbRemoteSerialProtocol:
             elif inputCharacter == '':
                 packet = ''
             else:
-                packet += inputCharacter
+                if skipSecond:
+                    skipSecond = False
+                else:
+                    packet += inputCharacter
         return packet
 
-    def readResponse(self):
-        received = self.readPacket()    # get Response
+    def readResponse(self, skipSecond=False):
+        received = self.readPacket(skipSecond)    # get Response
         received = self.getReply(received)
         asbytes = bytes.fromhex(received[1:])
         received = asbytes.decode("ASCII")
@@ -84,30 +88,33 @@ class GdbRemoteSerialProtocol:
     def sendPacket(self, packet):
         self.serial.write(packet.encode())
 
-    def sendMonitorCommand(self, command):
+    def sendCommand(self, command, isMonitorCommand=True):
         '''
-            This function formats, sends, and processes
-        the response for a GDB "Monitor" commands.
+            This function formats and sends commands to the probe
 
+            For "Monitor: commands the parameter "isMonitorCommand"
+        must be true.
             e.g. "swdp"
+
+            For other commands it must be false
+
         '''
-        out = binascii.hexlify(bytes(command, 'UTF-8'))
-        packet = f'$qRcmd,{out.decode("UTF-8")}'
+        if isMonitorCommand == True:
+            out = binascii.hexlify(bytes(command, 'UTF-8'))
+            packet = f'$qRcmd,{out.decode("UTF-8")}'
+        else:
+            packet = f'${command}'
         checksum = self._calculateChecksum(packet[1:])
         asbytes = "{:x}".format(checksum)
         checksumString = str(asbytes)
         output = f'{packet}#{checksumString}'
         self.sendPacket(output)
-        self.sendAck()
-
-    def sendCommand(self, command):
-        pass
 
     def signonToProbe(self):
         #
         # Send the "mon" command
         #
-        self.sendMonitorCommand('s')
+        self.sendCommand('s')
         #
         # Get the first block response
         #
@@ -131,6 +138,12 @@ class GdbRemoteSerialProtocol:
 
         received = self.readPacket()
         print(received)
+        #
+        # send the "mon so" command (soft attach)
+        #
+        self.sendCommand('so')
+        received = self.readPacket()
+        print(received)
 
     def getReply(self, packet):
         '''
@@ -148,12 +161,28 @@ class GdbRemoteSerialProtocol:
         return None
 
     def readMemory(self, address):
-        self.serial.write('x 0x20000000'.encode())
+        #
+        # Send the command
+        #
+        self.serial.write('m20000000,4'.encode())
+        #self.sendCommand('m20000000,4', False)
+        #
+        # Read reply
+        #
+        reply = self.readPacket(True)
+        reply = self.readPacket(True)
+        #
+        # Send Ack
+        #
+
+        #
+        # process reply
+        #
+        value = 0
+        return value
 
     def connect(self):
         try:
-            self.serial.reset_input_buffer()
-            self.serial.reset_output_buffer()
             received = self.readPacket()
             # received = self.serial.read(6).decode('UTF-8)')
             if self.validPacket(received):
@@ -168,16 +197,30 @@ class GdbRemoteSerialProtocol:
     def disconnect(self):
         self.serial.close()
 
+    def doCommands(self):
+        while True:
+            try:
+                command = input("Enter a command for ctxLink: ")
+                if command == '':
+                    break
+                self.serial.write((command + '\n').encode())
+                while self.serial.in_waiting != 0:
+                    print(self.readPacket())
+                    self.sendAck()
+            except:
+                break
 
 def main():
-    serial_instance = serial.Serial('COM8', 38400, timeout=1)
+    serial_instance = serial.Serial('COM20', 38400, timeout=5)
     gdbServer = GdbRemoteSerialProtocol(serial_instance)
     if gdbServer.connect():
-        #
-        # send the "mon" command as a test
-        #
-        gdbServer.signonToProbe()
-        gdbServer.readMemory(0x20000000)
+        gdbServer.doCommands()
+        # #
+        # # send the "mon" command as a test
+        # #
+        # gdbServer.signonToProbe()
+        
+        # value = gdbServer.readMemory(0x20000000)
 
     else:
         print('Failed to open port -> COM8')
