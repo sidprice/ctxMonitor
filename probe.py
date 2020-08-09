@@ -13,8 +13,24 @@ class Probe:
     def _sendAck(self):
         self.serial.write('+'.encode())
 
+    def _sendNak(self):
+        self.serial.write('-'.encode())
+
+    def _checkAck(self):
+        ackCharacter = self.serial.read(1).decode('UTF-8')
+        return ackCharacter == '+'
+
     def _sendPacket(self, packet):
-        self.serial.write(packet.encode())
+        '''
+            Send the passed packet to the probe and wait for an
+            ACK.
+
+            If a NAK is received, resend the packet
+        '''
+        while True:
+            self.serial.write(packet.encode())
+            if self._checkAck() == True:
+                break
 
     def _calculateChecksum(self, inputString):
         asBytes = bytes(inputString, 'UTF-8')
@@ -24,11 +40,14 @@ class Probe:
             checksum &= 0xff
         return checksum
 
+    def sendPacket(self, packet):
+        self.serial.write(packet.encode())
 
     #
     # A valid packet begins with a '$' and has a valid
     # checksum that is prefixed by '#'
     #
+
     def _validatePacket(self, packet):
         if packet.find('$', 0, 1) != -1:
             checksumStart = packet.find('#', 1)
@@ -45,6 +64,18 @@ class Probe:
                     return True
         return False
 
+    def getReply(self, packet):
+        '''
+            Return the packet data contents.
+
+            Assumes the caller has validated the packet
+        '''
+        checksumStart = packet.find('#', 1)
+        if checksumStart != -1:
+            return packet[1:checksumStart]
+        else:
+            return None
+
     def _readInput(self):
         '''
             Start by reading the first character from the probe. It
@@ -56,7 +87,7 @@ class Probe:
 
             On sucessful reading acknowledge the packet
         '''
-        result = ''
+        result = None
         inputCharacters = self.serial.read(1).decode('UTF-8')
         if inputCharacters == '$':
             while True:
@@ -69,12 +100,26 @@ class Probe:
                         inputCharacters += nextCharacter
                         lastCharacters -= 1
                     break
-            if self._validatePacket(inputCharacters) == True:
+
+            result = self.getReply(inputCharacters)
+            if result != None:
                 self._sendAck()
-                result = inputCharacters
             else:
                 self.sendNak()
         return result
+
+    def getResponse(self):
+        inputResponse = self._readInput()
+        if inputResponse == None:
+            return inputResponse
+        if inputResponse.startswith('OK') == False:
+            if inputResponse.startswith('O'):
+                '''
+                    The response is ASCII hex so decode it
+                '''
+                asbytes = bytes.fromhex(inputResponse[1:])
+                inputResponse = asbytes.decode("ASCII")
+        return inputResponse
 
     def sendCommand(self, command, isMonitorCommand=True):
         '''
@@ -98,7 +143,6 @@ class Probe:
         output = f'{packet}#{checksumString}'
         self.sendPacket(output)
 
-
     def isConnected(self):
         response = self._readInput()
         return response == self._OK
@@ -111,6 +155,15 @@ def main():
             if probe.isConnected() == True:
                 print('connected')
                 probe.sendCommand('s')
+                while True:
+                    '''
+                        Loop here reading resonses until "OK" is received
+                    '''
+                    response = probe.getResponse()
+                    if response != None:
+                        print(response, end=' ')
+                        if response == "OK":
+                            break
             else:
                 print('Failed to connect')
     except Exception as ex:
