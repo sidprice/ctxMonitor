@@ -1,5 +1,6 @@
 import serial
 import binascii
+import utilities
 
 
 class Probe:
@@ -168,18 +169,11 @@ def main():
                 # Read memory as a test
                 probe.sendCommand('m20000000,4', False)
                 value = probe.getResponse()
-                valueAsBytes = bytes(value, 'UTF-8')
-                print(valueAsBytes)
 
-                value = value[6:] + value[4:6] + value[2:4] + value[:2]
-                print(value)
-                result = 0
-                for char in value:
-                    result *= 16
-                    temp = ord(char) - 48
-                    result += temp
-                value = hex(result)
-                print(f'Memory address 0x20000000 contains {value}')
+                value = utilities.integerFromAsciiHex(value)
+                result = utilities.integerToHexDisplayValue(value)
+                
+                print(f'Memory address 0x20000000 contains {result}')
             else:
                 print('Failed to connect')
     except Exception as ex:
