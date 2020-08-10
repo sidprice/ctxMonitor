@@ -41,7 +41,7 @@ class Probe:
         return checksum
 
     def sendPacket(self, packet):
-        self.serial.write(packet.encode())
+        self._sendPacket(packet)
 
     #
     # A valid packet begins with a '$' and has a valid
@@ -153,7 +153,6 @@ def main():
         with serial.Serial('COM8', 115200, timeout=5) as serial_instance:
             probe = Probe(serial_instance)
             if probe.isConnected() == True:
-                print('connected')
                 probe.sendCommand('s')
                 while True:
                     '''
@@ -161,9 +160,26 @@ def main():
                     '''
                     response = probe.getResponse()
                     if response != None:
-                        print(response, end=' ')
                         if response == "OK":
                             break
+                        print(response, end=' ')
+                probe.sendCommand('vAttach;1', False)
+                response = probe.getResponse()
+                # Read memory as a test
+                probe.sendCommand('m20000000', False)
+                value = probe.getResponse()
+                valueAsBytes = bytes(value, 'UTF-8')
+                print(valueAsBytes)
+
+                value = value[6:] + value[4:6] + value[2:4] + value[:2]
+                print(value)
+                result = 0
+                for char in value:
+                    result *= 16
+                    temp = ord(char) - 48
+                    result += temp
+                value = hex(result)
+                print(f'Memory address 0x20000000 contains {value}')
             else:
                 print('Failed to connect')
     except Exception as ex:
