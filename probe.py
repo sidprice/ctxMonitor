@@ -166,7 +166,7 @@ def main():
                 probe.sendCommand('vAttach;1', False)
                 response = probe.getResponse()
                 # Read memory as a test
-                probe.sendCommand('m20000000', False)
+                probe.sendCommand('m20000000,4', False)
                 value = probe.getResponse()
                 valueAsBytes = bytes(value, 'UTF-8')
                 print(valueAsBytes)
