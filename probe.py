@@ -28,8 +28,9 @@ class Probe:
 
             If a NAK is received, resend the packet
         '''
-        while True:
-            self.serial.write(packet.encode())
+        output = packet.encode()
+        while True:  # TODO Introduce a retry/fail count
+            self.serial.write(output)
             if self._checkAck() == True:
                 break
 
@@ -89,7 +90,7 @@ class Probe:
             On sucessful reading acknowledge the packet
         '''
         result = None
-        inputCharacters = self.serial.read(1).decode('UTF-8')
+        inputCharacters = self.serial.read(1).decode('UTF-8')   # TODO Does serial.read have a timeout and is it being used fully?
         if inputCharacters == '$':
             while True:
                 lastCharacters = 2  # checksum length
@@ -124,6 +125,7 @@ class Probe:
                 '''
                     The response is ASCII hex so decode it
                 '''
+                # TODO Does this need to account for different sized hex values, e.g, uint32_t, uint16_t etc.?
                 asbytes = bytes.fromhex(inputResponse[1:])
                 inputResponse = asbytes.decode("ASCII")
         return inputResponse
@@ -150,6 +152,7 @@ class Probe:
         output = f'{packet}#{checksumString}'
         self.sendPacket(output)
 
+    # TODO Is this needed and if so, is this the way to check it
     def isConnected(self):
         response = self._readInput()
         return response == self._OK
@@ -178,7 +181,7 @@ def main():
 
                 value = utilities.integerFromAsciiHex(value)
                 result = utilities.integerToHexDisplayValue(value)
-                
+
                 print(f'Memory address 0x20000000 contains {result}')
             else:
                 print('Failed to connect')
