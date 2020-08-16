@@ -102,11 +102,17 @@ class Probe:
                         lastCharacters -= 1
                     break
 
-            result = self.getReply(inputCharacters)
+            if self._validatePacket(inputCharacters) == False:
+                return None
+
+            result = self._extractReply(inputCharacters)
             if result != None:
                 self._sendAck()
             else:
                 self.sendNak()
+        #
+        # TODO Do we need to explicitly check for "+"?
+        #
         return result
 
     def getResponse(self):
