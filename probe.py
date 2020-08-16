@@ -1,3 +1,4 @@
+from time import sleep
 import serial
 import binascii
 import utilities
@@ -90,7 +91,7 @@ class Probe:
             On sucessful reading acknowledge the packet
         '''
         result = None
-        inputCharacters = self.serial.read(1).decode('UTF-8')   # TODO Does serial.read have a timeout and is it being used fully?
+        inputCharacters = self.serial.read(1).decode('UTF-8')
         if inputCharacters == '$':
             while True:
                 lastCharacters = 2  # checksum length
@@ -160,8 +161,9 @@ class Probe:
 
 def main():
     try:
-        with serial.Serial('COM8', 115200, timeout=5) as serial_instance:
+        with serial.Serial('COM8', 115200, timeout=2) as serial_instance:
             probe = Probe(serial_instance)
+            sleep(1)
             if probe.isConnected() == True:
                 probe.sendCommand('s')
                 while True:
