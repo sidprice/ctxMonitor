@@ -65,7 +65,7 @@ class Probe:
                     return True
         return False
 
-    def getReply(self, packet):
+    def _extractReply(self, packet):
         '''
             Return the packet data contents.
 
