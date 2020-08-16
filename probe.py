@@ -112,9 +112,6 @@ class Probe:
                 self._sendAck()
             else:
                 self.sendNak()
-        #
-        # TODO Do we need to explicitly check for "+"?
-        #
         return result
 
     def getResponse(self):
