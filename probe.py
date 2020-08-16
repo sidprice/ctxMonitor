@@ -123,7 +123,6 @@ class Probe:
                 '''
                     The response is ASCII hex so decode it
                 '''
-                # TODO Does this need to account for different sized hex values, e.g, uint32_t, uint16_t etc.?
                 asbytes = bytes.fromhex(inputResponse[1:])
                 inputResponse = asbytes.decode("ASCII")
         return inputResponse
