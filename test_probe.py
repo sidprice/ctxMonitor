@@ -1,4 +1,5 @@
 import unittest
+from unittest.mock import Mock
 import probe as Probe
 
 '''
@@ -7,26 +8,33 @@ import probe as Probe
 
 
 class TestProbe(unittest.TestCase):
-    '''
-        Test packets
-    '''
+    ##########################################################################
+    #
+    #   Test packets used in this class
+    #
+    ##########################################################################
+
     _pkt8 = '$38#6B'  # 8-bit value
     _pkt16 = '$3038#CE'  # 16-bit value
     _pkt32 = '$00380240#91'  # 32-bit value
     _pkt64 = '$0038024010000000#12'  # 64-bit value
 
-    '''
-        Test that "_extractReply" correctly extracts 8, 16, and 32 bit values
+    ##########################################################################
+    #
+    #   Tests  "_extractReply" correctly extracts 8, 16, and 32 bit values
+    #
+    #   Note that the method "_extractReply" assumes the calling
+    #   method has validated the packet; it does no validation of
+    #   the packet.
+    #
+    ##########################################################################
 
-        Note that the method "_extractReply" assumes the calling
-        method has validated the packet; it does no validation of
-        the packet.
-    '''
-
-    '''
-        Tests:
-            8-bit extraction - good & bad
-    '''
+    ##########################################################################
+    #
+    #   Tests:
+    #       8-bit extraction - good & bad
+    #
+    ##########################################################################
 
     def test_extractReply_8bit_success(self):
         probe = Probe.Probe(None)
@@ -36,20 +44,24 @@ class TestProbe(unittest.TestCase):
         probe = Probe.Probe(None)
         self.assertNotEqual(probe._extractReply(self._pkt8), '00')
 
-    '''
-        Tests
-            not 8-bit input
-    '''
+    ##########################################################################
+    #
+    #   Tests:
+    #       not 8-bit input
+    #
+    ##########################################################################
 
     def test_extractReply_not_8bit(self):
         probe = Probe.Probe(None)
         self.assertNotEqual(probe._extractReply(self._pkt16), '30')
         self.assertNotEqual(probe._extractReply(self._pkt16), '38')
 
-    '''
-        Tests:
-            Good and bad 16-bit results
-    '''
+    ##########################################################################
+    #
+    #   Tests:
+    #       Good and bad 16-bit packets
+    #
+    ##########################################################################
 
     def test_extractReply_16bit_success(self):
         probe = Probe.Probe(None)
@@ -59,10 +71,12 @@ class TestProbe(unittest.TestCase):
         probe = Probe.Probe(None)
         self.assertNotEqual(probe._extractReply(self._pkt16), '0000')
 
-    '''
-        Tests:
-            Good and bad 32-bit results
-    '''
+    ##########################################################################
+    #
+    #   Tests:
+    #       Good and bad 32-bit packets
+    #
+    ##########################################################################
 
     def test_extractReply_32bit_success(self):
         probe = Probe.Probe(None)
@@ -72,10 +86,12 @@ class TestProbe(unittest.TestCase):
         probe = Probe.Probe(None)
         self.assertNotEqual(probe._extractReply(self._pkt32), '00000000')
 
-    '''
-        Tests:
-            Good and bad 64-bit results
-    '''
+    ##########################################################################
+    #
+    #   Tests:
+    #       Good and bad 64-bit packets
+    #
+    ##########################################################################
 
     def test_extractReply_64bit_success(self):
         probe = Probe.Probe(None)
@@ -84,6 +100,48 @@ class TestProbe(unittest.TestCase):
     def test_extractReply_64bit_fail(self):
         probe = Probe.Probe(None)
         self.assertNotEqual(probe._extractReply(self._pkt64), '0000000000000000')
+
+    ##########################################################################
+    #
+    #   Test _readInput recieves and builds packets
+    #
+    ##########################################################################
+
+    def test_readInput_good_packet(self):
+        serial = Mock()
+        serial.read.side_effect = [b'$', b'3', b'8', b'#', b'6', b'B']
+        probe = Probe.Probe(serial)
+        self.assertEqual(probe._readInput(), '38')
+
+    def test_readInput_bad_leader(self):
+        serial = Mock()
+        serial.read.side_effect = [b'x', b'3', b'8', b'#', b'6', b'B']
+        probe = Probe.Probe(serial)
+        self.assertEqual(probe._readInput(), None)
+
+    def test_readInput_bad_checksum(self):
+        serial = Mock()
+        serial.read.side_effect = [b'$', b'3', b'8', b'#', b'5', b'B']
+        probe = Probe.Probe(serial)
+        self.assertEqual(probe._readInput(), None)
+
+    ##########################################################################
+    #
+    #   Test _checkAck
+    #
+    ##########################################################################
+
+    def test_check_ack_good(self):
+        serial = Mock()
+        serial.read.side_effect = [b'+']
+        probe = Probe.Probe(serial)
+        self.assertTrue(probe._checkAck())
+
+    def test_check_ack_fail(self):
+        serial = Mock()
+        serial.read.side_effect = [b'-']
+        probe = Probe.Probe(serial)
+        self.assertFalse(probe._checkAck())
 
 
 if __name__ == '__main__':
