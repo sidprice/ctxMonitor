@@ -92,6 +92,8 @@ class Probe:
         '''
         result = None
         inputCharacters = self.serial.read(1).decode('UTF-8')
+        if inputCharacters == '':
+            print('Problem')
         if inputCharacters == '$':
             while True:
                 lastCharacters = 2  # checksum length
@@ -154,12 +156,44 @@ class Probe:
         response = self._readInput()
         return response == self._OK
 
+    def _memoryRead(self, command):
+        self.sendCommand(command, False)
+        value = self.getResponse()
+
+        value = utilities.integerFromAsciiHex(value)
+        result = utilities.integerToHexDisplayValue(value)
+        return result
+
+    def readMemory_8(self, address):
+        command = f'm{format(address, "x")},1'
+        value = self._memoryRead(command)
+        print(f'Memory address {hex(address)} contains {value}')
+        return value
+
+    def readMemory_16(self, address):
+        command = f'm{format(address, "x")},2'
+        value = self._memoryRead(command)
+        print(f'Memory address {hex(address)} contains {value}')
+        return value
+
+    def readMemory_32(self, address):
+        command = f'm{format(address, "x")},4'
+        value = self._memoryRead(command)
+        print(f'Memory address {hex(address)} contains {value}')
+        return value
+
+    def readMemory_64(self, address):
+        command = f'm{format(address, "x")},8'
+        value = self._memoryRead(command)
+        print(f'Memory address {hex(address)} contains {value}')
+        return value
+
 
 def main():
     try:
-        with serial.Serial('COM8', 115200, timeout=2) as serial_instance:
+        with serial.Serial('COM8', 115200, timeout=10) as serial_instance:
             probe = Probe(serial_instance)
-            sleep(1)
+            sleep(2)
             if probe.isConnected() == True:
                 probe.sendCommand('s')
                 while True:
@@ -173,14 +207,19 @@ def main():
                         print(response, end=' ')
                 probe.sendCommand('vAttach;1', False)
                 response = probe.getResponse()
+
+                probe.readMemory_8(0x20000000)
+                probe.readMemory_16(0x20000000)
+                probe.readMemory_32(0x20000000)
+                probe.readMemory_64(0x20000000)
                 # Read memory as a test
-                probe.sendCommand('m20000000,4', False)
-                value = probe.getResponse()
+                # probe.sendCommand('m20000000,4', False)
+                # value = probe.getResponse()
 
-                value = utilities.integerFromAsciiHex(value)
-                result = utilities.integerToHexDisplayValue(value)
+                # value = utilities.integerFromAsciiHex(value)
+                # result = utilities.integerToHexDisplayValue(value)
 
-                print(f'Memory address 0x20000000 contains {result}')
+                # print(f'Memory address 0x20000000 contains {result}')
             else:
                 print('Failed to connect')
     except Exception as ex:

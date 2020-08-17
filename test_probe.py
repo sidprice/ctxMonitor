@@ -143,6 +143,22 @@ class TestProbe(unittest.TestCase):
         probe = Probe.Probe(serial)
         self.assertFalse(probe._checkAck())
 
+    def testReadMemory_8(self):
+        probe = Probe.Probe(None)
+        probe.readMemory_8(0x20000000)
+
+    def testReadMemory_16(self):
+        probe = Probe.Probe(None)
+        probe.readMemory_16(0x20000000)
+
+    def testReadMemory_32(self):
+        probe = Probe.Probe(None)
+        probe.readMemory_32(0x20000000)
+
+    def testReadMemory_64(self):
+        probe = Probe.Probe(None)
+        probe.readMemory_64(0x20000000)
+
 
 if __name__ == '__main__':
     unittest.main()
