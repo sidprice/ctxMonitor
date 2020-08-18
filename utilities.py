@@ -22,14 +22,13 @@ def integerFromAsciiHex(asciihex):
     # first correct the byte order to ssttuuvvwwxxyyzz
     #
     length = len(asciihex)
-    if (length > 0 and length < 4):
-        value = asciihex[:2]
-    elif (length < 8):
-        value = asciihex[2:4] + asciihex[:2]
-    elif (length < 16):
-        value = asciihex[6:] + asciihex[4:6] + asciihex[2:4] + asciihex[:2]
-    else:
-        value = asciihex[14:] + asciihex[12:14] + asciihex[10:12] + asciihex[8:10]  + asciihex[6:8] + asciihex[4:6] + asciihex[2:4] + asciihex[:2]
+
+    startIndex = 0
+    value =''
+    while (length):
+        value = asciihex[startIndex: startIndex + 2] + value
+        startIndex += 2
+        length -= 2
 
     #
     # Iterate over the string of hex characters and
@@ -46,4 +45,11 @@ def integerToHexDisplayValue(integer):
     return hex(integer)
 
 if __name__ == '__main__':
-    print(integerFromAsciiHex(''))
+    print(hex(integerFromAsciiHex('00')))       # 2
+    print(hex(integerFromAsciiHex('0038')))     # 4
+    print(hex(integerFromAsciiHex('003802')))   # 6
+    print(hex(integerFromAsciiHex('00380240'))) #8
+    print(hex(integerFromAsciiHex('0038024010')))   #10
+    print(hex(integerFromAsciiHex('003802401000'))) #12
+    print(hex(integerFromAsciiHex('00380240100000')))   #14
+    print(hex(integerFromAsciiHex('0038024010000000'))) #16
