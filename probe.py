@@ -189,7 +189,7 @@ class Probe:
         return value
 
 
-def main():
+def demo():
     try:
         with serial.Serial('COM8', 115200, timeout=10) as serial_instance:
             probe = Probe(serial_instance)
@@ -227,4 +227,4 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    demo()
