@@ -10,10 +10,12 @@
 ##########################################################################
 
 from ctx_pubsub import Ctx_PubSub
+from variables import Variables
 
 
 class VariableManager():
     __instance = None
+    _pubsub = None
 
     @staticmethod
     def getInstance():
@@ -32,11 +34,14 @@ class VariableManager():
             raise Exception('This class is a singleton')
         else:
             VariableManager.__instance = self
-            pubsub = Ctx_PubSub.getInstance()
+            self._pubsub = Ctx_PubSub.getInstance()
             #
             # Subscribe to elf file loading requests
             #
-            pubsub.subscribe_load_elf_file(_listener_elf_file)
+            self._pubsub.subscribe_load_elf_file(self._listener_elf_file)
 
-    def _listener_elf_file(self, filename):
-        print(filename)
+    def _listener_elf_file(self, elf_file):
+        myVariables = Variables()
+        symbols = myVariables.Load(elf_file)
+        self._pubsub.send_variable_database(symbols)
+        

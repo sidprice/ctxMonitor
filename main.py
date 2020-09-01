@@ -2,6 +2,7 @@ from PySide2.QtWidgets import QApplication, QWidget, QMainWindow, QMenuBar, QMen
 from PySide2.QtUiTools import QUiLoader
 from PySide2.QtCore import QFile, QIODevice
 from ctx_pubsub import Ctx_PubSub
+from variable_manager import VariableManager
 import sys
 import os
 
@@ -13,6 +14,11 @@ class MainWindow(QMainWindow):
         # create an instance of the Ctx_PubSub class for this window
         #
         pubSub = Ctx_PubSub.getInstance()
+        #
+        # Get the VariableManger instance
+        #
+        variableManager = VariableManager.getInstance()
+
         self.setWindowTitle('CtxMonitor by Sid Price')
         self.resize(800, 600)
 
@@ -76,13 +82,13 @@ class MainWindow(QMainWindow):
             #         row += 1
             #         self.symbolTableView.setRowCount(row+1)
 
-    def _listener_database(self, data):
-        print(data)
+    def _listener_database(self, symbols):
+        print(symbols)
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     #
-    #   TODO create the VariableManager and ProbeManager here
+    #   TODO create the ProbeManager here
     #
     window = MainWindow()
     app.exec_()

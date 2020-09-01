@@ -77,7 +77,7 @@ class Ctx_PubSub():
     #   Send the given database topic to listeners
     #
     def send_variable_database(self, database):
-        pub.sendMessage(TOPIC_VARIABLE_DB, data=database)
+        pub.sendMessage(TOPIC_VARIABLE_DB, symbols=database)
 
     ###
     #
