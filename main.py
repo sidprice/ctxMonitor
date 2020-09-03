@@ -82,6 +82,7 @@ class MainWindow(QMainWindow):
         if dialog.exec() == QDialog.Accepted:
             elfName = str(dialog.selectedFiles()[0])
             self._pubSub.send_load_elf_file(elf_filename=elfName)
+        self.activateWindow()
 
     def _closeElf(self):
         self._pubSub.send_close_elf_file()
