@@ -3,11 +3,13 @@ from PySide2.QtUiTools import QUiLoader
 from PySide2.QtCore import QFile, QIODevice
 from ctx_pubsub import Ctx_PubSub
 from variable_manager import VariableManager
+from symbol_select_dialog import SelectSymbol
 import sys
 import os
 
 
 class MainWindow(QMainWindow):
+    _symbols = None     # The symbols read from the ELF file
     def __init__(self):
         super().__init__()
         #
@@ -28,10 +30,14 @@ class MainWindow(QMainWindow):
                 '&Open ELF File': self._openElf,
                 'E&xit': self.close,
             },
+            'Edit': {
+                'Add Variable ...': self._newVariable,
+            },
             'Help': {
                 'About': None,
             }
         }, self._menuBar)
+        self.setMenuBar(self._menuBar)
 
         self.show()
         #
@@ -68,22 +74,25 @@ class MainWindow(QMainWindow):
             elfName = str(dialog.selectedFiles()[0])
             pubSub = Ctx_PubSub.getInstance()
             pubSub.send_load_elf_file(elf_filename=elfName)
-            # myVariables = variables.Variables()
-            # symbols = myVariables.Load(str(dialog.selectedFiles()[0]))
-            # if symbols != None:
-            #     row = 0
-            #     for name, value in symbols.items():
-            #         item = QTableWidgetItem(name)
-            #         item.setTextAlignment(Qt.AlignCenter)
-            #         self.symbolTableView.setItem(row, 0, item)
-            #         item = QTableWidgetItem(f'0x{value}')
-            #         item.setTextAlignment(Qt.AlignCenter)
-            #         self.symbolTableView.setItem(row, 1, item)
-            #         row += 1
-            #         self.symbolTableView.setRowCount(row+1)
+
+    def _newVariable(self):
+        dialog = SelectSymbol(self._symbols)
+        dialog.exec()
 
     def _listener_database(self, symbols):
-        print(symbols)
+        if symbols != None:
+            self._symbols = symbols
+            print(symbols)
+        #     row = 0
+        #     for name, value in symbols.items():
+        #         item = QTableWidgetItem(name)
+        #         item.setTextAlignment(Qt.AlignCenter)
+        #         self.symbolTableView.setItem(row, 0, item)
+        #         item = QTableWidgetItem(f'0x{value}')
+        #         item.setTextAlignment(Qt.AlignCenter)
+        #         self.symbolTableView.setItem(row, 1, item)
+        #         row += 1
+        #         self.symbolTableView.setRowCount(row+1)
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
