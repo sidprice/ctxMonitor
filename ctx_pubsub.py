@@ -28,6 +28,15 @@ TOPIC_ELF_FILE_LOAD = 'root.load_elf_file'
 
 ###
 #
+#   Close the current ELF file:
+#       The Main Window of the UI sends this request.
+#
+#       The Variable Manager listens to this topic, it flushes the
+#       symbols and publishes an empty database
+TOPIC_ELF_FILE_CLOSE = 'root.close_elf_file'
+
+###
+#
 #   Subscribe to the database of variables:
 #       The main window of the UI sends this request.
 #
@@ -67,10 +76,24 @@ class Ctx_PubSub():
 
     ###
     #
+    #   Send message to request closing the current elf file
+    #
+    def send_close_elf_file(self):
+        pub.sendMessage(TOPIC_ELF_FILE_CLOSE)
+
+    ###
+    #
     #   Subscribe to the load elf topic
     #
     def subscribe_load_elf_file(self, listener):
         pub.subscribe(listener, TOPIC_ELF_FILE_LOAD)
+
+    ###
+    #
+    #   Subscribe to the close elf topic
+    #
+    def subscribe_close_elf_file(self, listener):
+        pub.subscribe(listener, TOPIC_ELF_FILE_CLOSE)
 
     ###
     #

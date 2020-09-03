@@ -9,13 +9,15 @@ import os
 
 
 class MainWindow(QMainWindow):
-    _symbols = None     # The symbols read from the ELF file
+    _symbols = None  # The symbols read from the ELF file
+    _pubsub = None
+
     def __init__(self):
         super().__init__()
         #
         # create an instance of the Ctx_PubSub class for this window
         #
-        pubSub = Ctx_PubSub.getInstance()
+        self._pubSub = Ctx_PubSub.getInstance()
         #
         # Get the VariableManger instance
         #
@@ -28,6 +30,7 @@ class MainWindow(QMainWindow):
         self._menu_items = self._menu_setup({
             '&File': {
                 '&Open ELF File': self._openElf,
+                '&Close Elf File': self._closeElf,
                 'E&xit': self.close,
             },
             'Edit': {
@@ -39,11 +42,17 @@ class MainWindow(QMainWindow):
         }, self._menuBar)
         self.setMenuBar(self._menuBar)
 
+        self._add_variable_menu = self._menu_items['Edit']['Add Variable ...']
+        self._add_variable_menu.setEnabled(False)
+
+        self._close_elf_file_menu = self._menu_items['File']['Close Elf File']
+        self._close_elf_file_menu.setEnabled(False)
+
         self.show()
         #
         # Ready to roll! subscribe to the database topic
         #
-        pubSub.subscribe_variable_database(self._listener_database)
+        self._pubSub.subscribe_variable_database(self._listener_database)
         
 
     def _menu_setup(self, d, parent=None):
@@ -72,8 +81,10 @@ class MainWindow(QMainWindow):
         dialog.setFileMode(QFileDialog.ExistingFiles)
         if dialog.exec() == QDialog.Accepted:
             elfName = str(dialog.selectedFiles()[0])
-            pubSub = Ctx_PubSub.getInstance()
-            pubSub.send_load_elf_file(elf_filename=elfName)
+            self._pubSub.send_load_elf_file(elf_filename=elfName)
+
+    def _closeElf(self):
+        self._pubSub.send_close_elf_file()
 
     def _newVariable(self):
         dialog = SelectSymbol(self._symbols)
@@ -82,6 +93,8 @@ class MainWindow(QMainWindow):
     def _listener_database(self, symbols):
         if symbols != None:
             self._symbols = symbols
+            self._add_variable_menu.setEnabled(True)
+            self._close_elf_file_menu.setEnabled(True)
             print(symbols)
         #     row = 0
         #     for name, value in symbols.items():
@@ -93,6 +106,10 @@ class MainWindow(QMainWindow):
         #         self.symbolTableView.setItem(row, 1, item)
         #         row += 1
         #         self.symbolTableView.setRowCount(row+1)
+        else:
+            self._add_variable_menu.setEnabled(False)
+            self._close_elf_file_menu.setEnabled(False)
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
