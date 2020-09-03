@@ -1,6 +1,6 @@
-from PySide2.QtWidgets import QApplication, QWidget, QMainWindow, QMenuBar, QMenu, QAction, QFileDialog, QDialog
+from PySide2.QtWidgets import QApplication, QWidget, QMainWindow, QMenuBar, QMenu, QAction, QFileDialog, QDialog, QTableWidgetItem, QStatusBar
 from PySide2.QtUiTools import QUiLoader
-from PySide2.QtCore import QFile, QIODevice
+from PySide2.QtCore import QFile, QIODevice, Qt
 from ctx_pubsub import Ctx_PubSub
 from variable_manager import VariableManager
 from symbol_select_dialog import SelectSymbol
@@ -9,6 +9,53 @@ import os
 
 
 class MainWindow(QMainWindow):
+    ##########
+    #
+    #   String constants used in MainWindow
+    #
+    ##########
+
+    #####
+    #
+    #   Menu item strings
+    #
+    #####
+    _fileMenuName = 'File'
+    _openElfFileMenuName = 'Open ELF File'
+    _closeElfFileMenuName = 'Close Elf File'
+    _exitMenuName = 'Exit'
+    #
+    _editMenuName = 'Edit'
+    _addVariableMenuName = 'Add Variable ...'
+    #
+    _helpMenuName = 'Help'
+    _aboutMenuName = 'About'
+    #####
+    #
+    #   Statusbar tips
+    #
+    #####
+    ##
+    #
+    #   File menu item tips
+    #
+    ##
+    _openElfFileTip = 'Open an ELF file'
+    _closeElfFileTip = 'Close current Elf file'
+    _exitTip = 'Close the application'
+    ##
+    #
+    #   Edit menu item tips
+    #
+    ##
+    _addVariableTip = 'Add variable(s) to monitor'
+    ##
+    #
+    #   Help menu item tips
+    #
+    ##
+    _aboutTip = 'Show application properties'
+    #
     _symbols = None  # The symbols read from the ELF file
     _pubsub = None
 
@@ -27,27 +74,46 @@ class MainWindow(QMainWindow):
         self.resize(800, 600)
 
         self._menuBar = QMenuBar(self)
+        self._statusBar = QStatusBar(self)
+        self.setStatusBar(self._statusBar)
+
         self._menu_items = self._menu_setup({
-            '&File': {
-                '&Open ELF File': self._openElf,
-                '&Close Elf File': self._closeElf,
-                'E&xit': self.close,
+            self._fileMenuName: {
+                self._openElfFileMenuName: self._openElf,
+                self._closeElfFileMenuName: self._closeElf,
+                self._exitMenuName: self.close,
             },
-            'Edit': {
-                'Add Variable ...': self._newVariable,
+            self._editMenuName: {
+                self._addVariableMenuName: self._newVariable,
             },
-            'Help': {
-                'About': None,
+            self._helpMenuName: {
+                self._aboutMenuName: None,
             }
         }, self._menuBar)
         self.setMenuBar(self._menuBar)
-
-        self._add_variable_menu = self._menu_items['Edit']['Add Variable ...']
-        self._add_variable_menu.setEnabled(False)
-
-        self._close_elf_file_menu = self._menu_items['File']['Close Elf File']
+        #
+        # File menu items
+        #
+        self._open_elf_file_menu = self._menu_items[self._fileMenuName][self._openElfFileMenuName]
+        self._open_elf_file_menu.setStatusTip(self._openElfFileTip)
+        #
+        self._close_elf_file_menu = self._menu_items[self._fileMenuName][self._closeElfFileMenuName]
         self._close_elf_file_menu.setEnabled(False)
-
+        self._close_elf_file_menu.setStatusTip(self._closeElfFileTip)
+        #
+        self._exit_menu = self._menu_items[self._fileMenuName][self._exitMenuName]
+        self._exit_menu.setStatusTip(self._exitTip)
+        #
+        #   Edit menu items
+        #
+        self._add_variable_menu = self._menu_items[self._editMenuName][self._addVariableMenuName]
+        self._add_variable_menu.setEnabled(False)
+        self._add_variable_menu.setStatusTip(self._addVariableTip)
+        #
+        #   Help menu items
+        #
+        self._about_menu = self._menu_items[self._helpMenuName][self._aboutMenuName]
+        self._about_menu.setStatusTip(self._aboutTip)
         self.show()
         #
         # Ready to roll! subscribe to the database topic
@@ -97,16 +163,16 @@ class MainWindow(QMainWindow):
             self._add_variable_menu.setEnabled(True)
             self._close_elf_file_menu.setEnabled(True)
             print(symbols)
-        #     row = 0
-        #     for name, value in symbols.items():
-        #         item = QTableWidgetItem(name)
-        #         item.setTextAlignment(Qt.AlignCenter)
-        #         self.symbolTableView.setItem(row, 0, item)
-        #         item = QTableWidgetItem(f'0x{value}')
-        #         item.setTextAlignment(Qt.AlignCenter)
-        #         self.symbolTableView.setItem(row, 1, item)
-        #         row += 1
-        #         self.symbolTableView.setRowCount(row+1)
+            # row = 0
+            # for name, value in symbols.items():
+            #     item = QTableWidgetItem(name)
+            #     item.setTextAlignment(Qt.AlignCenter)
+            #     self.symbolTableView.setItem(row, 0, item)
+            #     item = QTableWidgetItem(f'0x{value}')
+            #     item.setTextAlignment(Qt.AlignCenter)
+            #     self.symbolTableView.setItem(row, 1, item)
+            #     row += 1
+            #     self.symbolTableView.setRowCount(row+1)
         else:
             self._add_variable_menu.setEnabled(False)
             self._close_elf_file_menu.setEnabled(False)
