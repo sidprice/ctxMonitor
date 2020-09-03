@@ -115,9 +115,12 @@ class MainWindow(QMainWindow):
         self._about_menu = self._menu_items[self._helpMenuName][self._aboutMenuName]
         self._about_menu.setStatusTip(self._aboutTip)
         self.show()
-        #
-        # Ready to roll! subscribe to the database topic
-        #
+        
+        ##################################################
+        #                                                #
+        # Ready to roll! subscribe to the database topic #
+        #                                                #
+        ##################################################
         self._pubSub.subscribe_variable_database(self._listener_database)
         
 
