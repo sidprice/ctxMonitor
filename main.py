@@ -1,9 +1,12 @@
-from PySide2.QtWidgets import QApplication, QWidget, QMainWindow, QMenuBar, QMenu, QAction, QFileDialog, QDialog, QTableWidgetItem, QStatusBar
+from PySide2.QtWidgets import QApplication, QWidget, QMainWindow, QMenuBar, QMenu, QAction, QFileDialog, QDialog, QTableWidgetItem, QStatusBar, QGridLayout
+from PySide2.QtWidgets import QLabel, QLineEdit
 from PySide2.QtUiTools import QUiLoader
 from PySide2.QtCore import QFile, QIODevice, Qt
 from ctx_pubsub import Ctx_PubSub
 from variable_manager import VariableManager
 from symbol_select_dialog import SelectSymbol
+
+import widgets.display_monitored_variables_simple as monitorDisplay
 import sys
 import os
 
@@ -61,6 +64,25 @@ class MainWindow(QMainWindow):
 
     def __init__(self):
         super().__init__()
+
+
+        self.window = QWidget()
+        self.layout = QGridLayout()
+        self.setCentralWidget(self.window)
+        self.window.setLayout(self.layout)
+
+        ####
+        #
+        #   Add the custom widget that shows monitored variables
+        #
+        #   Note:
+        #       A custom widget is used so that the display may be
+        #       updated to a more advanced version by designing a
+        #       new widget
+        #
+        ####
+        self.md = monitorDisplay.DisplayMonitoredVariables_Simple()
+        self.layout.addWidget(self.md, 0, 0)
         #
         # create an instance of the Ctx_PubSub class for this window
         #
@@ -114,6 +136,8 @@ class MainWindow(QMainWindow):
         #
         self._about_menu = self._menu_items[self._helpMenuName][self._aboutMenuName]
         self._about_menu.setStatusTip(self._aboutTip)
+
+
         self.show()
         
         ##################################################
