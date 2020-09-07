@@ -12,14 +12,16 @@ class SelectSymbol(QtWidgets.QDialog):
     def __init__(self, symbols):
         super().__init__()
 
-        self.symbols = symbols
+        self._symbols = symbols
         uic.loadUi('symbol_select_dialog.ui', self)
 
-        self.symbols_view = self.findChild(QtWidgets.QTreeView, 'tblViewSymbols')
-        self.ok_button = self.findChild(QtWidgets.QPushButton, 'btnOk')
-        self.ok_button.clicked.connect(self._okButtonPressed)
-        self.cancel_button = self.findChild(QtWidgets.QPushButton, 'btnCancel')
-        self.cancel_button.clicked.connect(self._cancelButtonPressed)
+        self._symbols_view = self.findChild(QtWidgets.QTableView, 'tblViewSymbols')
+        self._ok_button = self.findChild(QtWidgets.QPushButton, 'btnOk')
+        self._ok_button.clicked.connect(self._okButtonPressed)
+        self._cancel_button = self.findChild(QtWidgets.QPushButton, 'btnCancel')
+        self._cancel_button.clicked.connect(self._cancelButtonPressed)
+
+        self._displaySymbols()
 
     def _okButtonPressed(self):
         self.result = 'OK'
@@ -29,6 +31,17 @@ class SelectSymbol(QtWidgets.QDialog):
         self.result = 'Cancel'
         self.close()
 
+    def _displaySymbols(self):
+        row = 0
+        # for name, value in self._symbols.items():
+        #     item = QTableWidgetItem(name)
+        #     item.setTextAlignment(Qt.AlignCenter)
+        #     self.symbolTableView.setItem(row, 0, item)
+        #     item = QTableWidgetItem(f'0x{value}')
+        #     item.setTextAlignment(Qt.AlignCenter)
+        #     self.symbolTableView.setItem(row, 1, item)
+        #     row += 1
+        #     self.symbolTableView.setRowCount(row+1)
 
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)

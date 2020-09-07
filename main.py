@@ -1,12 +1,13 @@
 from PySide2.QtWidgets import QApplication, QWidget, QMainWindow, QMenuBar, QMenu, QAction, QFileDialog, QDialog, QTableWidgetItem, QStatusBar, QGridLayout
-from PySide2.QtWidgets import QLabel, QLineEdit
+from PySide2.QtWidgets import QLabel, QLineEdit, QPushButton
 from PySide2.QtUiTools import QUiLoader
 from PySide2.QtCore import QFile, QIODevice, Qt
 from ctx_pubsub import Ctx_PubSub
 from variable_manager import VariableManager
 from symbol_select_dialog import SelectSymbol
 
-import widgets.display_monitored_variables_simple as monitorDisplay
+#import widgets.display_monitored_variables_simple as monitorDisplay
+from widgets.variable_display import VariableDisplay
 import sys
 import os
 
@@ -71,18 +72,6 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(self.window)
         self.window.setLayout(self.layout)
 
-        ####
-        #
-        #   Add the custom widget that shows monitored variables
-        #
-        #   Note:
-        #       A custom widget is used so that the display may be
-        #       updated to a more advanced version by designing a
-        #       new widget
-        #
-        ####
-        self.md = monitorDisplay.DisplayMonitoredVariables_Simple()
-        self.layout.addWidget(self.md, 0, 0)
         #
         # create an instance of the Ctx_PubSub class for this window
         #
@@ -137,6 +126,18 @@ class MainWindow(QMainWindow):
         self._about_menu = self._menu_items[self._helpMenuName][self._aboutMenuName]
         self._about_menu.setStatusTip(self._aboutTip)
 
+        ####
+        #
+        #   Add the custom widget that shows monitored variables
+        #
+        #   Note:
+        #       A custom widget is used so that the display may be
+        #       updated to a more advanced version by designing a
+        #       new widget
+        #
+        ####
+        self._monitored = VariableDisplay(self)
+        self.layout.addWidget(self._monitored, 0, 0)
 
         self.show()
         
@@ -175,6 +176,9 @@ class MainWindow(QMainWindow):
         if dialog.exec() == QDialog.Accepted:
             elfName = str(dialog.selectedFiles()[0])
             self._pubSub.send_load_elf_file(elf_filename=elfName)
+            self.statusBar().showMessage(elfName + ' ... Loaded', 2000)
+            
+
         self.activateWindow()
 
     def _closeElf(self):
@@ -189,20 +193,11 @@ class MainWindow(QMainWindow):
             self._symbols = symbols
             self._add_variable_menu.setEnabled(True)
             self._close_elf_file_menu.setEnabled(True)
-            print(symbols)
-            # row = 0
-            # for name, value in symbols.items():
-            #     item = QTableWidgetItem(name)
-            #     item.setTextAlignment(Qt.AlignCenter)
-            #     self.symbolTableView.setItem(row, 0, item)
-            #     item = QTableWidgetItem(f'0x{value}')
-            #     item.setTextAlignment(Qt.AlignCenter)
-            #     self.symbolTableView.setItem(row, 1, item)
-            #     row += 1
-            #     self.symbolTableView.setRowCount(row+1)
+            # self._monitored.init(symbols)
         else:
             self._add_variable_menu.setEnabled(False)
             self._close_elf_file_menu.setEnabled(False)
+            self._monitored.clear()
 
 
 if __name__ == '__main__':
