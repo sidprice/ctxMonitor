@@ -6,7 +6,8 @@
 
 from PySide2.QtUiTools import QUiLoader
 from PySide2 import QtWidgets
-from PySide2.QtCore import QFile, QIODevice
+from PySide2.QtCore import QFile, QIODevice, Qt
+from PySide2.QtWidgets import QTableWidgetItem
 import sys
 
 
@@ -39,16 +40,17 @@ class SelectSymbol(QtWidgets.QDialog):
         self.close()
 
     def _displaySymbols(self):
+        self._symbols_view.setColumnCount(2)
         row = 0
-        # for name, value in self._symbols.items():
-        #     item = QTableWidgetItem(name)
-        #     item.setTextAlignment(Qt.AlignCenter)
-        #     self.symbolTableView.setItem(row, 0, item)
-        #     item = QTableWidgetItem(f'0x{value}')
-        #     item.setTextAlignment(Qt.AlignCenter)
-        #     self.symbolTableView.setItem(row, 1, item)
-        #     row += 1
-        #     self.symbolTableView.setRowCount(row+1)
+        for name, value in self._symbols.items():
+            self._symbols_view.setRowCount(row+1)
+            item = QTableWidgetItem(name)
+            item.setTextAlignment(Qt.AlignCenter)
+            self._symbols_view.setItem(row, 0, item)
+            item = QTableWidgetItem(f'0x{value}')
+            item.setTextAlignment(Qt.AlignCenter)
+            self._symbols_view.setItem(row, 1, item)
+            row += 1
 
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
