@@ -4,7 +4,9 @@
 #
 ##########################################################################
 
-from PyQt5 import QtWidgets, uic
+from PySide2.QtUiTools import QUiLoader
+from PySide2 import QtWidgets
+from PySide2.QtCore import QFile, QIODevice
 import sys
 
 
@@ -13,14 +15,19 @@ class SelectSymbol(QtWidgets.QDialog):
         super().__init__()
 
         self._symbols = symbols
-        uic.loadUi('symbol_select_dialog.ui', self)
+        ui_file_name = 'symbol_select_dialog.ui'
+        ui_file = QFile(ui_file_name)
+        loader = QUiLoader()
+        if not ui_file.open(QIODevice.ReadOnly):
+            print("oops")
+        self._window = loader.load(ui_file, self)
 
         self._symbols_view = self.findChild(QtWidgets.QTableView, 'tblViewSymbols')
         self._ok_button = self.findChild(QtWidgets.QPushButton, 'btnOk')
         self._ok_button.clicked.connect(self._okButtonPressed)
         self._cancel_button = self.findChild(QtWidgets.QPushButton, 'btnCancel')
         self._cancel_button.clicked.connect(self._cancelButtonPressed)
-
+        self._window.show()
         self._displaySymbols()
 
     def _okButtonPressed(self):
