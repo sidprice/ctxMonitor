@@ -7,7 +7,7 @@
 from PySide2.QtUiTools import QUiLoader
 from PySide2 import QtWidgets
 from PySide2.QtCore import QFile, QIODevice, Qt
-from PySide2.QtWidgets import QTableWidgetItem, QVBoxLayout, QHBoxLayout, QPushButton, QTableWidget
+from PySide2.QtWidgets import QTableWidgetItem, QVBoxLayout, QHBoxLayout, QPushButton, QTableWidget, QCheckBox, QWidget
 import sys
 
 
@@ -21,23 +21,23 @@ class SelectSymbol(QtWidgets.QDialog):
         #
         #   Limit the size of the dialog
         #
-        self.setMaximumWidth(450)
-        self.setMinimumWidth(450)
+        self.setMaximumWidth(550)
+        self.setMinimumWidth(550)
         self.setMaximumHeight(300)
         self.setMinimumHeight(300)
         #
         #   Create the controls
         #
         self._symbols_view = QTableWidget()
-        self._symbols_view.setColumnCount(3)
-        self._symbols_view.setHorizontalHeaderItem(0, QTableWidgetItem('Name'))
-        self._symbols_view.setHorizontalHeaderItem(1, QTableWidgetItem('Address'))
-        self._symbols_view.setHorizontalHeaderItem(2, QTableWidgetItem('Update Period'))
-        self._symbols_view.setColumnWidth(0, self.width() / 3)
-        self._symbols_view.setColumnWidth(1, self.width() / 3)
-        # self._symbols_view.setColumnWidth(2, self.width() / 3)
-
-
+        self._symbols_view.setColumnCount(4)
+        self._symbols_view.setHorizontalHeaderItem(0, QTableWidgetItem('Enable'))
+        self._symbols_view.setHorizontalHeaderItem(1, QTableWidgetItem('Name'))
+        self._symbols_view.setHorizontalHeaderItem(2, QTableWidgetItem('Address'))
+        self._symbols_view.setHorizontalHeaderItem(3, QTableWidgetItem('Update Period'))
+        self._symbols_view.setColumnWidth(0, 60)
+        otherWidth = (self.width() - 60) / 3
+        self._symbols_view.setColumnWidth(1, otherWidth)
+        self._symbols_view.setColumnWidth(2, otherWidth)
         self._symbols_view.horizontalHeader().setStretchLastSection(True)
         self._symbols_view.verticalHeader().hide()
         self._ok_button = QPushButton('OK')
@@ -72,16 +72,30 @@ class SelectSymbol(QtWidgets.QDialog):
         self.close()
 
     def _displaySymbols(self):
-        # self._symbols_view.setColumnCount(2)
         row = 0
         for name, value in self._symbols.items():
-            self._symbols_view.setRowCount(row+1)
+            self._symbols_view.setRowCount(row + 1)
+            ###
+            #
+            #   Build the enable/disable checkbox
+            #
+            ###            
+            checkboxWidget = QWidget()
+            checkBox = QCheckBox(checkboxWidget)
+            checkBox.setCheckState(Qt.CheckState.Checked)
+            layoutCheckbox = QHBoxLayout(checkboxWidget)
+            layoutCheckbox.addWidget(checkBox)
+            layoutCheckbox.setAlignment(Qt.AlignCenter)
+            layoutCheckbox.setContentsMargins(0, 0, 0, 0)
+            self._symbols_view.setCellWidget(row,0, checkboxWidget)
+            
             item = QTableWidgetItem(name)
             item.setTextAlignment(Qt.AlignCenter)
-            self._symbols_view.setItem(row, 0, item)
+            self._symbols_view.setItem(row, 1, item)
+
             item = QTableWidgetItem(f'0x{value}')
             item.setTextAlignment(Qt.AlignCenter)
-            self._symbols_view.setItem(row, 1, item)
+            self._symbols_view.setItem(row, 2, item)
             # item = QTableWidgetItem('0')
             # item.setTextAlignment(Qt.AlignCenter)
             # self._symbols_view.setItem(row, 2, item)
