@@ -28,6 +28,15 @@ TOPIC_ELF_FILE_LOAD = 'root.load_elf_file'
 
 ###
 #
+#   Subscribe to the ELF loaded message
+#       The Main Window subscribes to this message.
+#
+#       The Variable Manager publishes it after an ELF file
+#       has been loaded and processed
+TOPIC_ELF_FILE_LOADED = 'root.elf_file_loaded'
+
+###
+#
 #   Close the current ELF file:
 #       The Main Window of the UI sends this request.
 #
@@ -37,12 +46,12 @@ TOPIC_ELF_FILE_CLOSE = 'root.close_elf_file'
 
 ###
 #
-#   Subscribe to the database of variables:
+#   Subscribe to the database of monitored variables:
 #       The main window of the UI sends this request.
 #
 #       The VariableManager sends the database to this topic when
 #       it changes
-TOPIC_VARIABLE_DB = 'root.variable_database'
+TOPIC_MONITORED_DB = 'root.monitored_database'
 
 
 class Ctx_PubSub():
@@ -66,6 +75,12 @@ class Ctx_PubSub():
         else:
             Ctx_PubSub.__instance = self
 
+    ##########
+    #
+    #   Send topic messages
+    #
+    ##########
+
     ###
     #
     #   Send message to request loading the given elf file. Filename
@@ -76,10 +91,30 @@ class Ctx_PubSub():
 
     ###
     #
+    #   Send message to indicated ELF is loaded
+    #
+    def send_loaded_elf_file(self, datbase):
+        pub.sendMessage(TOPIC_ELF_FILE_LOADED, symbols = datbase)
+
+    ###
+    #
     #   Send message to request closing the current elf file
     #
     def send_close_elf_file(self):
         pub.sendMessage(TOPIC_ELF_FILE_CLOSE)
+
+    ###
+    #
+    #   Send the given database topic to listeners
+    #
+    def send_monitored_database(self, database):
+        pub.sendMessage(TOPIC_MONITORED_DB, monitored=database)
+
+    ##########
+    #
+    #   Subscribe to topic messages
+    #
+    ##########
 
     ###
     #
@@ -90,6 +125,13 @@ class Ctx_PubSub():
 
     ###
     #
+    #   Subscribe to the loaded elf topic
+    #
+    def subscribe_loaded_elf_file(self, listener):
+        pub.subscribe(listener, TOPIC_ELF_FILE_LOADED)
+
+    ###
+    #
     #   Subscribe to the close elf topic
     #
     def subscribe_close_elf_file(self, listener):
@@ -97,17 +139,10 @@ class Ctx_PubSub():
 
     ###
     #
-    #   Send the given database topic to listeners
+    #   Subscribe to the monitored database topic
     #
-    def send_variable_database(self, database):
-        pub.sendMessage(TOPIC_VARIABLE_DB, symbols=database)
-
-    ###
-    #
-    #   Subscribe to the variable database topic
-    #
-    def subscribe_variable_database(self, listener):
-        pub.subscribe(listener, TOPIC_VARIABLE_DB)
+    def subscribe_monitored_database(self, listener):
+        pub.subscribe(listener, TOPIC_MONITORED_DB)
 
 
 def myElf_Listener(elf_file):

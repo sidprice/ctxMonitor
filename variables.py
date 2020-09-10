@@ -2,7 +2,7 @@
 #
 # This class encapsulates access to the target program's global variables
 #
-# It loads the variable names and addresses from a give ELF file and prvides
+# It loads the variable names and addresses from a give ELF file and provides
 # an interface to the host program to access them.
 #
 ##########################################################################
@@ -13,8 +13,14 @@ import utils
 
 class Variables:
     def __init__(self):
-        self.variables = dict({})
+        self._variables = dict({})
+        self._monitored = dict({})
 
+    #####
+    #
+    #   Load the variables from the passed stream
+    #
+    #####
     def get_variables(self, stream):
         elffile = ELFFile(stream)
         section = elffile.get_section_by_name('.symtab')
@@ -32,8 +38,8 @@ class Variables:
                     if sType == 'STT_OBJECT':
                         value = symbol.entry.__getitem__('st_value')
                         if value >= 0x20000000:
-                            self.variables[symbol.name] = utils.format_hex(value, 8, False, False)
-            return self.variables
+                            self._variables[symbol.name] = utils.format_hex(value, 8, False, False)
+            return self._variables
         return None
 
     def Load(self, filepath):
@@ -47,7 +53,7 @@ class Variables:
     
     def get_value_by_name(self, name):
         try:
-            result = self.variables[name]
+            result = self._variables[name]
         except KeyError:
             result = None
         return result

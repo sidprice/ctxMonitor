@@ -143,10 +143,12 @@ class MainWindow(QMainWindow):
         
         ##################################################
         #                                                #
-        # Ready to roll! subscribe to the database topic #
+        # Ready to roll!                                 #
         #                                                #
         ##################################################
-        self._pubSub.subscribe_variable_database(self._listener_database)
+
+        self._pubSub.subscribe_monitored_database(self._listener_monitored)
+        self._pubSub.subscribe_loaded_elf_file(self._listener_elf_loaded)
         
 
     def _menu_setup(self, d, parent=None):
@@ -176,7 +178,7 @@ class MainWindow(QMainWindow):
         if dialog.exec() == QDialog.Accepted:
             elfName = str(dialog.selectedFiles()[0])
             self._pubSub.send_load_elf_file(elf_filename=elfName)
-            self.statusBar().showMessage(elfName + ' ... Loaded', 2000)
+            self.statusBar().showMessage(elfName + ' ... Loading', 2000)
             
 
         self.activateWindow()
@@ -188,17 +190,19 @@ class MainWindow(QMainWindow):
         dialog = SelectSymbol(self._symbols)
         dialog.exec()
 
-    def _listener_database(self, symbols):
+    def _listener_elf_loaded(self, symbols):
+        print('main got elf loaded')
+        self._close_elf_file_menu.setEnabled(True)
+        self._symbols = symbols
         if symbols != None:
-            self._symbols = symbols
             self._add_variable_menu.setEnabled(True)
-            self._close_elf_file_menu.setEnabled(True)
-            # self._monitored.init(symbols)
         else:
             self._add_variable_menu.setEnabled(False)
             self._close_elf_file_menu.setEnabled(False)
             self._monitored.clear()
 
+    def _listener_monitored(self, monitored):
+        print("main got monitored")
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
