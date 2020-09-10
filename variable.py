@@ -1,6 +1,6 @@
 ##########################################################################
 #
-#   Class for storing the variables enablked for monitoring
+#   Class for storing the variables enabled for monitoring
 #
 ##########################################################################
 
