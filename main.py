@@ -60,7 +60,8 @@ class MainWindow(QMainWindow):
     ##
     _aboutTip = 'Show application properties'
     #
-    _symbols = None  # The symbols read from the ELF file
+    _variables = None  # The symbols read from the ELF file
+    _monitored_variables = None
     _pubsub = None
 
     def __init__(self):
@@ -187,13 +188,13 @@ class MainWindow(QMainWindow):
         self._pubSub.send_close_elf_file()
 
     def _newVariable(self):
-        dialog = SelectSymbol(self._symbols)
+        dialog = SelectSymbol(self._variables, self._monitored_variables)
         dialog.exec()
 
     def _listener_elf_loaded(self, symbols):
         print('main got elf loaded')
         self._close_elf_file_menu.setEnabled(True)
-        self._symbols = symbols
+        self._variables = symbols
         if symbols != None:
             self._add_variable_menu.setEnabled(True)
         else:

@@ -10,12 +10,16 @@ from PySide2.QtCore import QFile, QIODevice, Qt
 from PySide2.QtWidgets import QTableWidgetItem, QVBoxLayout, QHBoxLayout, QPushButton, QTableWidget, QCheckBox, QWidget
 import sys
 
+from variables import Variables
+from variable import Variable
+
 
 class SelectSymbol(QtWidgets.QDialog):
-    def __init__(self, symbols):
+    def __init__(self, variables, monitored_variables):
         super().__init__()
 
-        self._symbols = symbols
+        self._variables = variables
+        self._monitored_variables = monitored_variables
 
         self.setWindowTitle('Select Symbol')
         #
@@ -28,18 +32,18 @@ class SelectSymbol(QtWidgets.QDialog):
         #
         #   Create the controls
         #
-        self._symbols_view = QTableWidget()
-        self._symbols_view.setColumnCount(4)
-        self._symbols_view.setHorizontalHeaderItem(0, QTableWidgetItem('Enable'))
-        self._symbols_view.setHorizontalHeaderItem(1, QTableWidgetItem('Name'))
-        self._symbols_view.setHorizontalHeaderItem(2, QTableWidgetItem('Address'))
-        self._symbols_view.setHorizontalHeaderItem(3, QTableWidgetItem('Update Period'))
-        self._symbols_view.setColumnWidth(0, 60)
+        self._variables_view = QTableWidget()
+        self._variables_view.setColumnCount(4)
+        self._variables_view.setHorizontalHeaderItem(0, QTableWidgetItem('Enable'))
+        self._variables_view.setHorizontalHeaderItem(1, QTableWidgetItem('Name'))
+        self._variables_view.setHorizontalHeaderItem(2, QTableWidgetItem('Address'))
+        self._variables_view.setHorizontalHeaderItem(3, QTableWidgetItem('Update Period'))
+        self._variables_view.setColumnWidth(0, 60)
         otherWidth = (self.width() - 60) / 3
-        self._symbols_view.setColumnWidth(1, otherWidth)
-        self._symbols_view.setColumnWidth(2, otherWidth)
-        self._symbols_view.horizontalHeader().setStretchLastSection(True)
-        self._symbols_view.verticalHeader().hide()
+        self._variables_view.setColumnWidth(1, otherWidth)
+        self._variables_view.setColumnWidth(2, otherWidth)
+        self._variables_view.horizontalHeader().setStretchLastSection(True)
+        self._variables_view.verticalHeader().hide()
         self._ok_button = QPushButton('OK')
         self._ok_button.clicked.connect(self._okButtonPressed)
         self._cancel_button = QPushButton('Cancel')
@@ -54,7 +58,7 @@ class SelectSymbol(QtWidgets.QDialog):
         hBox.addWidget(self._cancel_button)
 
         layout = vBox
-        layout.addWidget(self._symbols_view)
+        layout.addWidget(self._variables_view)
         layout.addLayout(hBox)
 
         self.setLayout(vBox)
@@ -73,8 +77,8 @@ class SelectSymbol(QtWidgets.QDialog):
 
     def _displaySymbols(self):
         row = 0
-        for name, value in self._symbols.items():
-            self._symbols_view.setRowCount(row + 1)
+        for name, var in self._variables.items():
+            self._variables_view.setRowCount(row + 1)
             ###
             #
             #   Build the enable/disable checkbox
@@ -82,23 +86,35 @@ class SelectSymbol(QtWidgets.QDialog):
             ###            
             checkboxWidget = QWidget()
             checkBox = QCheckBox(checkboxWidget)
-            checkBox.setCheckState(Qt.CheckState.Checked)
+            #
+            #   If the variable is in the monitored list
+            #   check the checkbox
+            #
+            isMonitored = False
+            if (self._monitored_variables != None):
+                if (self._monitored_variables[name]):
+                    isMonitored = True
+            if (isMonitored):
+                checkBox.setCheckState(Qt.CheckState.Checked)
+            else:
+                checkBox.setCheckState(Qt.CheckState.Unchecked)
+
             layoutCheckbox = QHBoxLayout(checkboxWidget)
             layoutCheckbox.addWidget(checkBox)
             layoutCheckbox.setAlignment(Qt.AlignCenter)
             layoutCheckbox.setContentsMargins(0, 0, 0, 0)
-            self._symbols_view.setCellWidget(row,0, checkboxWidget)
+            self._variables_view.setCellWidget(row,0, checkboxWidget)
             
             item = QTableWidgetItem(name)
             item.setTextAlignment(Qt.AlignCenter)
-            self._symbols_view.setItem(row, 1, item)
+            self._variables_view.setItem(row, 1, item)
 
-            item = QTableWidgetItem(f'0x{value}')
+            item = QTableWidgetItem(f'0x{var.address}')
             item.setTextAlignment(Qt.AlignCenter)
-            self._symbols_view.setItem(row, 2, item)
+            self._variables_view.setItem(row, 2, item)
             # item = QTableWidgetItem('0')
             # item.setTextAlignment(Qt.AlignCenter)
-            # self._symbols_view.setItem(row, 2, item)
+            # self._variables_view.setItem(row, 2, item)
             row += 1
 
 if __name__ == '__main__':

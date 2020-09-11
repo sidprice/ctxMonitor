@@ -9,6 +9,7 @@
 
 from elftools.elf.sections import SymbolTableSection
 from elftools.elf.elffile import ELFFile
+from variable import Variable
 import utils
 
 class Variables:
@@ -37,8 +38,12 @@ class Variables:
                     sType = info.__getitem__('type')
                     if sType == 'STT_OBJECT':
                         value = symbol.entry.__getitem__('st_value')
+
+                        # TODO Do something better than this compare, not all variables will be above 0x20000000
+
                         if value >= 0x20000000:
-                            self._variables[symbol.name] = utils.format_hex(value, 8, False, False)
+                            newVariable = Variable(symbol.name, utils.format_hex(value, 8, False, False))
+                            self._variables[symbol.name] = newVariable
             return self._variables
         return None
 
