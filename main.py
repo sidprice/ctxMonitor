@@ -60,8 +60,8 @@ class MainWindow(QMainWindow):
     ##
     _aboutTip = 'Show application properties'
     #
-    _variables = None  # The symbols read from the ELF file
-    _monitored_variables = None
+    _variables = dict({})  # The symbols read from the ELF file
+    _monitored_variables = dict({})
     _pubsub = None
 
     def __init__(self):
