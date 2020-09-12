@@ -47,10 +47,9 @@ TOPIC_ELF_FILE_CLOSE = 'root.close_elf_file'
 ###
 #
 #   Subscribe to the database of monitored variables:
-#       The main window of the UI sends this request.
 #
-#       The VariableManager sends the database to this topic when
-#       it changes
+#       The VariableManager or Monitor Select Dialog
+#       sends the database to this topic when it changes
 TOPIC_MONITORED_DB = 'root.monitored_database'
 
 

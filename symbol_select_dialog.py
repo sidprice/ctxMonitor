@@ -7,14 +7,17 @@
 from PySide2.QtUiTools import QUiLoader
 from PySide2 import QtWidgets
 from PySide2.QtCore import QFile, QIODevice, Qt, QPoint
-from PySide2.QtWidgets import QTableWidgetItem, QVBoxLayout, QHBoxLayout, QPushButton, QTableWidget, QCheckBox, QWidget
+from PySide2.QtWidgets import QTableWidgetItem, QVBoxLayout, QHBoxLayout, QPushButton, QTableWidget, QCheckBox, QWidget, QComboBox
 import sys
 
 from variables import Variables
 from variable import Variable
+from ctx_pubsub import Ctx_PubSub
+from ctx_timing import CtxTiming
 
 
 class SelectSymbol(QtWidgets.QDialog):
+
     def __init__(self, variables, monitored_variables):
         super().__init__()
 
@@ -68,14 +71,20 @@ class SelectSymbol(QtWidgets.QDialog):
         self._displaySymbols()
 
     def _okButtonPressed(self):
-        self.result = 'OK'
+        ###
+        #
+        #   Broadcast the monitored variables list changed
+        #
+        ###
+        pubSub = Ctx_PubSub.getInstance()
+        pubSub.send_monitored_database(database=self._monitored_variables)
         self.close()
 
     def _cancelButtonPressed(self):
-        self.result = 'Cancel'
         self.close()
 
     def _displaySymbols(self):
+        self._variables_view.blockSignals(True)
         row = 0
         for name, var in self._variables.items():
             self._variables_view.setRowCount(row + 1)
@@ -94,7 +103,7 @@ class SelectSymbol(QtWidgets.QDialog):
             #
             isMonitored = False
             if (self._monitored_variables != None):
-                if ( name in self._monitored_variables):
+                if (name in self._monitored_variables):
                     isMonitored = True
             if (isMonitored):
                 checkBox.setCheckState(Qt.CheckState.Checked)
@@ -119,30 +128,48 @@ class SelectSymbol(QtWidgets.QDialog):
             item.setTextAlignment(Qt.AlignCenter)
             self._variables_view.setItem(row, 2, item)
 
-            # item = QTableWidgetItem(f'{period}')
-            # item.setTextAlignment(Qt.AlignCenter)
-            # item.setFlags(Qt.ItemIsEnabled | Qt.ItemNeverHasChildren)
-            # self._variables_view.setItem(row, 3, item)
-            if (period != None):
-                item = QTableWidgetItem(f'{period}')
+            item = QComboBox()
+            item.setStyleSheet('font-size:12px')
+            item.addItems(CtxTiming.Periods)
+            if (isMonitored):
+                item.setEnabled(True)
+                index = item.findText(CtxTiming.text_from_period(self._monitored_variables[name].period))
+                item.setCurrentIndex(index)
             else:
-                item = QTableWidgetItem('')
-            item.setFlags(Qt.ItemIsEditable | Qt.ItemIsEnabled)
-            item.setTextAlignment(Qt.AlignCenter)
-            self._variables_view.setItem(row, 3, item)
+                item.setEnabled(False)
+            item.currentIndexChanged.connect(self._combobox_changed)
+            self._variables_view.setCellWidget(row, 3, item)
 
             row += 1
+        self._variables_view.blockSignals(False)
 
-    def _check_changed(self, thisBox):
+    def _combobox_changed(self):
         cb = self.sender()
         gl = cb.mapToGlobal(QPoint())
         lp = self._variables_view.viewport().mapFromGlobal(gl)
 
         ix = self._variables_view.indexAt(lp)
-        print(ix.row(), ix.column(), cb.isChecked())
+        row = ix.row()
+        column = ix.column()
+        name = (self._variables_view.item(row, 1)).text()
+        var = self._monitored_variables[name]
+        comboBox = self._variables_view.cellWidget(row, column)
+        period = CtxTiming.period_from_text(comboBox.currentText())
+        var.period = period
+        self._monitored_variables[name] = var
+
+    def _check_changed(self):
+        cb = self.sender()
+        gl = cb.mapToGlobal(QPoint())
+        lp = self._variables_view.viewport().mapFromGlobal(gl)
+
+        ix = self._variables_view.indexAt(lp)
         #
-        name = (self._variables_view.item(ix.row(), 1)).text()
-        period = (self._variables_view.item(ix.row(), 3)).text()
+        row = ix.row()
+        print(row)
+        name = (self._variables_view.item(row, 1)).text()
+        comboBox = self._variables_view.cellWidget(row, 3)
+        period = comboBox.currentText()
         if (cb.isChecked()):
             address = self._variables[name].address
             ##
@@ -150,12 +177,18 @@ class SelectSymbol(QtWidgets.QDialog):
             #   Update or create a monitor entry
             #
             ##
-            if ( name in self._monitored_variables):
+            if (name in self._monitored_variables):
                 var = self._monitored_variables[name]
                 var.period = period
             else:
                 var = Variable(name, address, period)
             self._monitored_variables[name] = var
+            ##
+            #
+            #   Ensure the period cell is enable for editing
+            #
+            ##
+            self._variables_view.cellWidget(row, 3).setEnabled(True)
         else:
             ##
             #
@@ -163,12 +196,10 @@ class SelectSymbol(QtWidgets.QDialog):
             #
             ##
             del self._monitored_variables[name]
-        
-        print(self._monitored_variables)
+
 
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
     window = SelectSymbol({'one': 'two', 'three': 'three'})
     window.exec()
-    print(window.result)
     # app.exec_()
