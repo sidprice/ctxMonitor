@@ -17,8 +17,8 @@ import json
 class VariableManager():
     __instance = None
     _pubsub = None
-    _symbols = None
-    _monitored = None
+    _symbols = dict({})
+    _monitored = dict({})
 
     @staticmethod
     def getInstance():
