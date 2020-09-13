@@ -85,7 +85,7 @@ class VariableManager():
     
     def _listener_elf_file_close(self):
         self._symbols = None
-        self._pubsub.send_variable_database(self._symbols)
+        self._pubsub.send_loaded_elf_file(self._symbols)
 
 
         
