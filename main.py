@@ -1,3 +1,4 @@
+from PyQt5.QtCore import QSettings, QCoreApplication
 from PySide2.QtWidgets import QApplication, QWidget, QMainWindow, QMenuBar, QMenu, QAction, QFileDialog, QDialog, QTableWidgetItem, QStatusBar, QGridLayout
 from PySide2.QtWidgets import QLabel, QLineEdit, QPushButton
 from PySide2.QtUiTools import QUiLoader
@@ -6,7 +7,7 @@ from ctx_pubsub import Ctx_PubSub
 from variable_manager import VariableManager
 from symbol_select_dialog import SelectSymbol
 
-#import widgets.display_monitored_variables_simple as monitorDisplay
+# import widgets.display_monitored_variables_simple as monitorDisplay
 from widgets.variable_display import VariableDisplay
 import sys
 import os
@@ -66,7 +67,6 @@ class MainWindow(QMainWindow):
 
     def __init__(self):
         super().__init__()
-
 
         self.window = QWidget()
         self.layout = QGridLayout()
@@ -141,7 +141,7 @@ class MainWindow(QMainWindow):
         self.layout.addWidget(self._monitored, 0, 0)
 
         self.show()
-        
+
         ##################################################
         #                                                #
         # Ready to roll!                                 #
@@ -150,7 +150,18 @@ class MainWindow(QMainWindow):
 
         self._pubSub.subscribe_monitored_database(self._listener_monitored)
         self._pubSub.subscribe_loaded_elf_file(self._listener_elf_loaded)
-        
+
+        #####
+        #
+        #   If we have previuosly loaded an ELF file, load it again
+        #
+        #####
+        settings = QSettings()
+        elf_file = settings.value('File/elf_file')
+        if (elf_file != None):
+            self._pubSub.send_load_elf_file(elf_filename=elf_file)
+            self.statusBar().showMessage(elf_file + ' ... Loading', 2000)
+
 
     def _menu_setup(self, d, parent=None):
         k = {}
@@ -172,19 +183,31 @@ class MainWindow(QMainWindow):
         return k
 
     def _openElf(self):
+        settings = QSettings()
         dialog = QFileDialog(self)
+        initial_dir = settings.value('file/open')
+        if (initial_dir != None):
+            dialog.setDirectory(initial_dir)
         dialog.setWindowTitle('Select the debug ELF file')
         dialog.setNameFilter('ELF Files (*.elf)')
         dialog.setFileMode(QFileDialog.ExistingFiles)
+        
         if dialog.exec() == QDialog.Accepted:
+            initial_dir = dialog.directory()
+            settings.setValue('file/open', initial_dir)
+            settings.sync()
             elfName = str(dialog.selectedFiles()[0])
+            settings = QSettings()
+            settings.setValue('File/elf_file', elfName)
+            settings.sync()
             self._pubSub.send_load_elf_file(elf_filename=elfName)
             self.statusBar().showMessage(elfName + ' ... Loading', 2000)
-            
 
         self.activateWindow()
 
     def _closeElf(self):
+        settings = QSettings()
+        settings.remove('File/elf_file')
         self._pubSub.send_close_elf_file()
 
     def _newVariable(self):
@@ -200,14 +223,19 @@ class MainWindow(QMainWindow):
         else:
             self._add_variable_menu.setEnabled(False)
             self._close_elf_file_menu.setEnabled(False)
-            self._monitored.clear()
+            self._monitored_variables.clear()
 
     def _listener_monitored(self, monitored):
         self._monitored_variables = monitored
         self._monitored.init(monitored)
 
+
 if __name__ == '__main__':
     app = QApplication(sys.argv)
+    QCoreApplication.setOrganizationName('Sid Price Design')
+    QCoreApplication.setApplicationName('ctxMonitor v1.0')
+    QCoreApplication.setOrganizationDomain('sidprice.com')
+
     #
     #   TODO create the ProbeManager here
     #
