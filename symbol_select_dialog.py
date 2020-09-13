@@ -169,7 +169,7 @@ class SelectSymbol(QtWidgets.QDialog):
         print(row)
         name = (self._variables_view.item(row, 1)).text()
         comboBox = self._variables_view.cellWidget(row, 3)
-        period = comboBox.currentText()
+        period = CtxTiming.period_from_text(comboBox.currentText())
         if (cb.isChecked()):
             address = self._variables[name].address
             ##

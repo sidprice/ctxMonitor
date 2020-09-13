@@ -4,8 +4,10 @@
 #
 ##########################################################################
 
+from ctx_timing import CtxTiming
+
 class Variable(object):
-    def __init__(self, name, address, period=0,):
+    def __init__(self, name, address, period=CtxTiming.Period_Default):
         super().__init__()
 
         self.name = name

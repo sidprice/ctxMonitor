@@ -21,6 +21,8 @@ class CtxTiming(object):
         '10 Seconds': 10000
     }
 
+    Period_Default = 100
+    
     def __init__(self):
         super().__init__()
 

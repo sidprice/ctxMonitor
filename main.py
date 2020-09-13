@@ -204,7 +204,7 @@ class MainWindow(QMainWindow):
 
     def _listener_monitored(self, monitored):
         self._monitored_variables = monitored
-        print('main.py -> ', monitored)
+        self._monitored.init(monitored)
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
