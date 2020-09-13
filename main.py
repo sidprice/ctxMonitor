@@ -31,7 +31,7 @@ class MainWindow(QMainWindow):
     _exitMenuName = 'Exit'
     #
     _editMenuName = 'Edit'
-    _addVariableMenuName = 'Add Variable ...'
+    _addVariableMenuName = 'Edit Variables ...'
     #
     _helpMenuName = 'Help'
     _aboutMenuName = 'About'
@@ -53,7 +53,7 @@ class MainWindow(QMainWindow):
     #   Edit menu item tips
     #
     ##
-    _addVariableTip = 'Add variable(s) to monitor'
+    _addVariableTip = 'Add/Edit variable(s) to monitor'
     ##
     #
     #   Help menu item tips
