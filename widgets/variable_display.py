@@ -28,5 +28,5 @@ class VariableDisplay(QWidget):
         self._layout.addWidget(self._display)
         self.setLayout(self._layout)
 
-    def init(self, variables):
+    def init(self, monitored_variables):
         pass
