@@ -34,7 +34,7 @@ class CtxTiming(object):
     def text_from_period(period):
         values = CtxTiming.Periods.values()
         values_list = list(values)
-        print(values_list)
+
         try:
             index = values_list.index(period)
             result = list(CtxTiming.Periods)[index]

@@ -166,7 +166,6 @@ class SelectSymbol(QtWidgets.QDialog):
         ix = self._variables_view.indexAt(lp)
         #
         row = ix.row()
-        print(row)
         name = (self._variables_view.item(row, 1)).text()
         comboBox = self._variables_view.cellWidget(row, 3)
         period = CtxTiming.period_from_text(comboBox.currentText())

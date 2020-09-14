@@ -80,8 +80,6 @@ class VariableManager():
                 # TODO Load the previous session monitors
                 #
                 self._monitored = json.load(monFid, object_hook=Variable.decode_variable)
-                print(self._monitored)
-                print(type(self._monitored))
 
         self._pubsub.send_monitored_database(self._monitored)
         self._pubsub.send_loaded_elf_file(self._symbols)
