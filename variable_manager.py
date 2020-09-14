@@ -11,6 +11,7 @@
 
 from ctx_pubsub import Ctx_PubSub
 from variables import Variables
+from variable import VariableEncoder
 from pathlib import Path
 import json
 
@@ -46,6 +47,10 @@ class VariableManager():
             # Subscribe to elf file close requests
             #
             self._pubsub.subscribe_close_elf_file(self._listener_elf_file_close)
+            #
+            # Subscribe to monitored variables database
+            #
+            self._pubsub.subscribe_monitored_database(self._listener_monitored_database)
 
     ##########
     #
@@ -67,25 +72,38 @@ class VariableManager():
         #   2.  If a MON file with the same filename exists, load it to monitored
         #
         ##
-        pathObj = Path(elf_file)
-        path = pathObj.parent
-        fileName = pathObj.stem
-        fileName += '.mon'
-        monPath = path / fileName  # filepath for the associated "mon" file
+        self._monitor_filepath = self._get_monitor_filename(elf_file)
         
-        if (Path(monPath).exists()):
-            with monPath.open(mode='r') as monFid:
+        if (Path(self._monitor_filepath).exists()):
+            with self._monitor_filepath.open(mode='r') as monFid:
                 #
-                # Load the previous session monitors
+                # TODO Load the previous session monitors
                 #
                 pass
 
         self._pubsub.send_monitored_database(self._monitored)
         self._pubsub.send_loaded_elf_file(self._symbols)
     
+    def _get_monitor_filename(self, elf_filename):
+        pathObj = Path(elf_filename)
+        path = pathObj.parent
+        fileName = pathObj.stem
+        fileName += '.mon'
+        monPath = path / fileName  # filepath for the associated "mon" file
+        return monPath
+
     def _listener_elf_file_close(self):
         self._symbols = None
         self._pubsub.send_loaded_elf_file(self._symbols)
 
-
-        
+    def _listener_monitored_database(self, monitored):
+        self._monitored = monitored
+        #####
+        #
+        #   Save the passed monitored variables list
+        #
+        #####
+        json_string = ''
+        json_string = json.dumps(self._monitored, cls=VariableEncoder, indent=4)
+        with open(self._monitor_filepath, 'w') as file:
+            json.dump(self._monitored, file, cls=VariableEncoder, indent=4)
