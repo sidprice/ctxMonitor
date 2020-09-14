@@ -18,6 +18,6 @@ class Variable:
 class VariableEncoder(json.JSONEncoder):
     def default(self, o):
         if (isinstance(o, Variable)):
-            return {'name': o.name, 'address': o.address, 'period': o.period}
+            return {'name': o.name, 'address': o.address, 'period': o.period, o.__class__.__name__: True}
         else:
             return json.JSONEncoder(self,0)
