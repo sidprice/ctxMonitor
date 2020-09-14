@@ -11,7 +11,7 @@
 
 from ctx_pubsub import Ctx_PubSub
 from variables import Variables
-from variable import VariableEncoder
+from variable import VariableEncoder, Variable
 from pathlib import Path
 import json
 
@@ -79,7 +79,9 @@ class VariableManager():
                 #
                 # TODO Load the previous session monitors
                 #
-                pass
+                self._monitored = json.load(monFid, object_hook=Variable.decode_variable)
+                print(self._monitored)
+                print(type(self._monitored))
 
         self._pubsub.send_monitored_database(self._monitored)
         self._pubsub.send_loaded_elf_file(self._symbols)
@@ -98,6 +100,7 @@ class VariableManager():
 
     def _listener_monitored_database(self, monitored):
         self._monitored = monitored
+        print(type(self._monitored))
         #####
         #
         #   Save the passed monitored variables list

@@ -15,6 +15,12 @@ class Variable:
         self.address = address
         self.period = period
 
+    @staticmethod    
+    def decode_variable(o):
+        if Variable.__name__ in o:
+            return Variable(name=o['name'], address=o['address'], period=o['period'])
+        return o
+
 class VariableEncoder(json.JSONEncoder):
     def default(self, o):
         if (isinstance(o, Variable)):
