@@ -215,7 +215,6 @@ class MainWindow(QMainWindow):
         dialog.exec()
 
     def _listener_elf_loaded(self, symbols):
-        print('main got elf loaded')
         self._close_elf_file_menu.setEnabled(True)
         self._variables = symbols
         if symbols != None:

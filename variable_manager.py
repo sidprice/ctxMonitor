@@ -98,7 +98,6 @@ class VariableManager():
 
     def _listener_monitored_database(self, monitored):
         self._monitored = monitored
-        print(type(self._monitored))
         #####
         #
         #   Save the passed monitored variables list
