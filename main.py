@@ -22,6 +22,12 @@ class MainWindow(QMainWindow):
 
     #####
     #
+    #   Main Window Title
+    #
+    #####
+    _mainWindowTitle = 'CtxMonitor by Sid Price'
+    #####
+    #
     #   Menu item strings
     #
     #####
@@ -82,7 +88,7 @@ class MainWindow(QMainWindow):
         #
         variableManager = VariableManager.getInstance()
 
-        self.setWindowTitle('CtxMonitor by Sid Price')
+        self.setWindowTitle(self._mainWindowTitle)
         self.resize(800, 600)
 
         self._menuBar = QMenuBar(self)
@@ -153,13 +159,14 @@ class MainWindow(QMainWindow):
 
         #####
         #
-        #   If we have previuosly loaded an ELF file, load it again
+        #   If we have previously loaded an ELF file, load it again
         #
         #####
         settings = QSettings()
         elf_file = settings.value('File/elf_file')
         if (elf_file != None):
             self._pubSub.send_load_elf_file(elf_filename=elf_file)
+            self.setWindowTitle(self._mainWindowTitle + '  -  ' + os.path.basename(elf_file))
             self.statusBar().showMessage(elf_file + ' ... Loading', 2000)
 
 
@@ -200,6 +207,7 @@ class MainWindow(QMainWindow):
             settings = QSettings()
             settings.setValue('File/elf_file', elfName)
             settings.sync()
+            self.setWindowTitle(self._mainWindowTitle + '  -  ' + os.path.basename(elfName))
             self._pubSub.send_load_elf_file(elf_filename=elfName)
             self.statusBar().showMessage(elfName + ' ... Loading', 2000)
 
