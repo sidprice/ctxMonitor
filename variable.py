@@ -9,7 +9,7 @@ import json
 
 
 class Variable:
-    def __init__(self, name, address, period=CtxTiming.Period_Default, enable=True):
+    def __init__(self, name, address, period=CtxTiming.Period_Default, enable=False):
         super().__init__()
 
         self.name = name
