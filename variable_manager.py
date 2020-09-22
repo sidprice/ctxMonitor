@@ -56,7 +56,7 @@ class VariableManager():
     #
     #   1.  Load the set of variables from the passed ELF file
     #   2.  If a MON file with the same filename exists, load it to monitored
-    #   3.  Update any monitored entriwes from the variables
+    #   3.  Update any monitored entries from the variables
     #
     ##########
     def _listener_elf_file_load(self, elf_file):
@@ -80,6 +80,16 @@ class VariableManager():
                 # TODO Load the previous session monitors
                 #
                 self._monitored = json.load(monFid, object_hook=Variable.decode_variable)
+        ##
+        #
+        #   3.  If we have monitored variables make sure their data
+        #       is up-to-date with the loaded symbols
+        #
+        ##
+        if (self._monitored != None):
+            for name, var in self._monitored.items():
+                sym = self._symbols[name]
+                var.address = sym.address
 
         self._pubsub.send_monitored_database(self._monitored)
         self._pubsub.send_loaded_elf_file(self._symbols)
