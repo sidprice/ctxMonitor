@@ -71,6 +71,11 @@ class VariableDisplay(QWidget):
             item.setFlags(Qt.ItemIsEnabled | Qt.ItemNeverHasChildren)
             self._display.setItem(row, 2, item)
 
+            item = QTableWidgetItem('')
+            item.setTextAlignment(Qt.AlignCenter)
+            item.setFlags(Qt.ItemIsEnabled | Qt.ItemNeverHasChildren)
+            self._display.setItem(row, 3, item)
+            
             row += 1
     
     def _play_pause_clicked(self):
