@@ -52,6 +52,14 @@ TOPIC_ELF_FILE_CLOSE = 'root.close_elf_file'
 #       sends the database to this topic when it changes
 TOPIC_MONITORED_DB = 'root.monitored_database'
 
+###
+#
+#   Monitor this variable:
+#       The variable Manager sends this..
+#
+#       The Probe Manager listens to this topic to setup
+#       variable monitoring
+TOPIC_MONITOR_VARIABLE = 'root.monitor_variable'
 
 class Ctx_PubSub():
     __instance = None
@@ -104,12 +112,19 @@ class Ctx_PubSub():
 
     ###
     #
-    #   Send the given database topic to listeners
+    #   Send the given database to listeners
     #
     def send_monitored_database(self, database):
         pub.sendMessage(TOPIC_MONITORED_DB, monitored=database)
 
-    ##########
+     ###
+    #
+    #   Request the given variable be monitored
+    #
+    def send_monitor_variable(self, variable):
+        pub.sendMessage(TOPIC_MONITOR_VARIABLE, monitor=variable)
+
+   ##########
     #
     #   Subscribe to topic messages
     #
@@ -142,6 +157,14 @@ class Ctx_PubSub():
     #
     def subscribe_monitored_database(self, listener):
         pub.subscribe(listener, TOPIC_MONITORED_DB)
+
+    ###
+    #
+    #   Subscribe to the monitored variable topic
+    #
+    def subscribe_monitor_variable(self, listener):
+        pub.subscribe(listener, TOPIC_MONITOR_VARIABLE)
+
 
 
 def myElf_Listener(elf_file):
