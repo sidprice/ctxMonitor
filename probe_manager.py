@@ -25,7 +25,7 @@ class ProbeManager():
     #   Define the tick period for the timer
     #
     ###
-    _tick_period = 100
+    _tick_period = 2000
 
     _monitored_variables = {}
     
@@ -52,6 +52,10 @@ class ProbeManager():
         ###
         self._pubSub = Ctx_PubSub.getInstance()
         self._pubSub.subscribe_monitor_variable(self._listener_monitor_variable)
+        self._pubSub.subscribe_monitored_database(self._listener_monitor_database)
+
+    def _listener_monitor_database(self, monitored):
+        self._monitored_variables = dict(monitored)
 
     def _listener_monitor_variable(self, monitor):
         ###
@@ -65,7 +69,6 @@ class ProbeManager():
         found =False
         if (self._monitored_variables != None):
             for name, var in self._monitored_variables.items():
-                print(f'{name} {var.address} {var.enable}')
                 if monitor.name == name:
                     ###
                     #
@@ -81,6 +84,8 @@ class ProbeManager():
                 self._monitored_variables[monitor.name] = monitor
 
     def _timer_tick(self):
-        pass
-        
+        for name, var in self._monitored_variables.items():
+            print(f'{var.name} {var.address} {var.enable}')
+        print('--+++++--')
+
 
