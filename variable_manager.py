@@ -15,6 +15,7 @@ from variable import VariableEncoder, Variable
 from pathlib import Path
 import json
 
+
 class VariableManager():
     __instance = None
     _pubsub = None
@@ -35,7 +36,7 @@ class VariableManager():
             Virtually private constructor
         '''
         if VariableManager.__instance != None:
-            raise Exception('This class is a singleton')
+            raise Exception('This class is a singleton, use getInstance')
         else:
             VariableManager.__instance = self
             self._pubsub = Ctx_PubSub.getInstance()
@@ -73,7 +74,7 @@ class VariableManager():
         #
         ##
         self._monitor_filepath = self._get_monitor_filename(elf_file)
-        
+
         if (Path(self._monitor_filepath).exists()):
             with self._monitor_filepath.open(mode='r') as monFid:
                 #
@@ -90,10 +91,14 @@ class VariableManager():
             for name, var in self._monitored.items():
                 sym = self._symbols[name]
                 var.address = sym.address
+                #
+                #   Send the monitored variable to listeners
+                #
+                self._pubsub.send_monitor_variable(variable=var)
 
         self._pubsub.send_monitored_database(self._monitored)
         self._pubsub.send_loaded_elf_file(self._symbols)
-    
+
     def _get_monitor_filename(self, elf_filename):
         pathObj = Path(elf_filename)
         path = pathObj.parent
