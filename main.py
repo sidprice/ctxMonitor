@@ -1,3 +1,5 @@
+import ctypes
+from PySide2.QtGui import QIcon
 from PyQt5.QtCore import QSettings, QCoreApplication
 from PySide2.QtWidgets import QApplication, QWidget, QMainWindow, QMenuBar, QMenu, QAction, QFileDialog, QDialog, QTableWidgetItem, QStatusBar, QGridLayout
 from PySide2.QtWidgets import QLabel, QLineEdit, QPushButton
@@ -94,6 +96,7 @@ class MainWindow(QMainWindow):
         self._variableManager = VariableManager.getInstance()
 
         self.setWindowTitle(self._mainWindowTitle)
+        self.setWindowIcon(QIcon('./icons/ctxMonitor_32x32.png'))
         self.resize(800, 600)
 
         self._menuBar = QMenuBar(self)
@@ -244,12 +247,11 @@ class MainWindow(QMainWindow):
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
+    app.setWindowIcon(QIcon('./icons/ctxMonitor_32x32.png'))
     QCoreApplication.setOrganizationName('Sid Price Design')
     QCoreApplication.setApplicationName('ctxMonitor v1.0')
     QCoreApplication.setOrganizationDomain('sidprice.com')
-
-    #
-    #   TODO create the ProbeManager here
-    #
+    myappid = 'mycompany.myproduct.subproduct.version'  # arbitrary string
+    ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
     window = MainWindow()
     app.exec_()
