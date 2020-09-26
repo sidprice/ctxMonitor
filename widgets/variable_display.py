@@ -41,6 +41,7 @@ class VariableDisplay(QWidget):
         self._monitored_variables = monitored_variables
 
         self._display.blockSignals(True)
+        self._display.clearContents()
         row = 0
         for name, var in self._monitored_variables.items():
             self._display.setRowCount(row+1)
@@ -95,7 +96,8 @@ class VariableDisplay(QWidget):
             icon = QIcon('icons/run.png')
         button.setIcon(icon)
         pubsub = Ctx_PubSub.getInstance()
-        pubsub.send_monitored_database(database = self._monitored_variables)
+        pubsub.send_monitored_database(database=self._monitored_variables)
+        pubsub.send_monitor_variable(variable=self._monitored_variables[name])
 
 
 
