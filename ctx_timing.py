@@ -22,6 +22,7 @@ class CtxTiming(object):
     }
 
     Period_Default = 100
+    Timer_Period = 100
     
     def __init__(self):
         super().__init__()

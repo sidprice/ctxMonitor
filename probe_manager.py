@@ -7,6 +7,7 @@
 
 from ctx_pubsub import Ctx_PubSub
 from PyQt5.QtCore import QTime, QTimer
+from ctx_timing import CtxTiming
 
 class ProbeManager():
     __instance = None
@@ -25,7 +26,7 @@ class ProbeManager():
     #   Define the tick period for the timer
     #
     ###
-    _tick_period = 2000
+    _tick_period = CtxTiming.Timer_Period
 
     _monitored_variables = {}
     
