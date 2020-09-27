@@ -78,7 +78,7 @@ class VariableManager():
         if (Path(self._monitor_filepath).exists()):
             with self._monitor_filepath.open(mode='r') as monFid:
                 #
-                # TODO Load the previous session monitors
+                # Load the previous session monitors
                 #
                 self._monitored = json.load(monFid, object_hook=Variable.decode_variable)
         ##

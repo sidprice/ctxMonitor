@@ -15,6 +15,7 @@ from PySide2.QtWidgets import QWidget, QHBoxLayout, QTableWidget, QTableWidgetIt
 from PySide2.QtGui import QPixmap, QImage, QIcon
 from PySide2.QtCore import Qt, QPoint
 from ctx_pubsub import Ctx_PubSub
+from variable import Variable
 
 
 class VariableDisplay(QWidget):
@@ -64,11 +65,11 @@ class VariableDisplay(QWidget):
             #   If we get here the variable is not displayed yet
             #
             ##
-            self._monitored_variables[monitor.name] = monitor
+            self._monitored_variables[monitor.name] = Variable( name=monitor.name, address=monitor.address, period=monitor.period, enable=monitor.enable)
             self._displayVariable(row, monitor)
 
     def init(self, monitored_variables):
-        self._monitored_variables = monitored_variables
+        self._monitored_variables = dict(monitored_variables)
 
         self._display.blockSignals(True)
         self._display.clearContents()
@@ -140,5 +141,4 @@ class VariableDisplay(QWidget):
             icon = QIcon('icons/run.png')
         button.setIcon(icon)
         pubsub = Ctx_PubSub.getInstance()
-        # pubsub.send_monitored_database(database=self._monitored_variables)
-        pubsub.send_monitor_variable(variable=self._monitored_variables[name])
+        pubsub.send_monitored_database(database=self._monitored_variables)
