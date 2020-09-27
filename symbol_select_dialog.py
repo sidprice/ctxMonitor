@@ -156,7 +156,7 @@ class SelectSymbol(QtWidgets.QDialog):
         comboBox = self._variables_view.cellWidget(row, column)
         period = CtxTiming.period_from_text(comboBox.currentText())
         var.period = period
-        self._monitored_variables[name] = var
+        #self._monitored_variables[name] = var
 
     def _check_changed(self):
         cb = self.sender()

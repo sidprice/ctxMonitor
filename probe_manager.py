@@ -8,6 +8,7 @@
 from ctx_pubsub import Ctx_PubSub
 from PyQt5.QtCore import QTime, QTimer
 from ctx_timing import CtxTiming
+from variable import Variable
 
 class ProbeManager():
     __instance = None
@@ -26,8 +27,8 @@ class ProbeManager():
     #   Define the tick period for the timer
     #
     ###
-    #_tick_period = CtxTiming.Timer_Period
-    _tick_period = 2000
+    _tick_period = CtxTiming.Timer_Period
+    #_tick_period = 2000
 
     _monitored_variables = {}
     _monitor_timers = {}
@@ -51,14 +52,17 @@ class ProbeManager():
         ###
         #
         #   Subscribe to variable monitor requests
-        #
+        #   
         ###
         self._pubSub = Ctx_PubSub.getInstance()
         self._pubSub.subscribe_monitor_variable(self._listener_monitor_variable)
         self._pubSub.subscribe_monitored_database(self._listener_monitor_database)
 
     def _listener_monitor_database(self, monitored):
-        self._monitored_variables = dict(monitored)
+        self._monitored_variables = {}
+        for name, var in monitored.items():
+            newVar = Variable(var.name, var.address, var.period, var.enable)
+            self._monitored_variables[name] = newVar
         self._updateMonitorTimers()
 
     def _listener_monitor_variable(self, monitor):
@@ -84,18 +88,22 @@ class ProbeManager():
                 found = True
                 break
         if (found == False):
-            self._monitored_variables[monitor.name] = monitor
+            self._monitored_variables[monitor.name] = Variable(monitor.name, monitor.address,monitor.period,monitor.enable)
         self._updateMonitorTimers()
 
     def _updateMonitorTimers(self):
         self._monitor_timers = {}
         for name, var in self._monitored_variables.items():
             self._monitor_timers[name] = var.period
-        print(self._monitor_timers)
 
     def _timer_tick(self):
-        for name, var in self._monitored_variables.items():
-            print(f'{var.name} {var.address} {var.enable}')
-        print('--+++++--')
+        for name, period in self._monitor_timers.items():
+            if (self._monitored_variables[name].enable):
+                if (period < self._tick_period):
+                    self._monitor_timers[name] = self._monitored_variables[name].period
+                    print(f'Get contents of {name}')
+                else:
+                    self._monitor_timers[name] -= self._tick_period
+
 
 
