@@ -112,7 +112,7 @@ class VariableManager():
         self._pubsub.send_loaded_elf_file(self._symbols)
 
     def _listener_monitored_database(self, monitored):
-        self._monitored = monitored
+        self._monitored = dict(monitored)
         #####
         #
         #   Save the passed monitored variables list

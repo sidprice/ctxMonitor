@@ -22,7 +22,7 @@ class SelectSymbol(QtWidgets.QDialog):
         super().__init__()
 
         self._variables = variables
-        self._monitored_variables = monitored_variables
+        self._monitored_variables = dict(monitored_variables)
 
         self.setWindowTitle('Select Symbol')
         #
