@@ -59,7 +59,7 @@ class ProbeManager():
 
     def _listener_monitor_database(self, monitored):
         self._monitored_variables = dict(monitored)
-        #self._updateMonitorTimers()
+        self._updateMonitorTimers()
 
     def _listener_monitor_variable(self, monitor):
         ###
@@ -85,6 +85,13 @@ class ProbeManager():
                 break
         if (found == False):
             self._monitored_variables[monitor.name] = monitor
+        self._updateMonitorTimers()
+
+    def _updateMonitorTimers(self):
+        self._monitor_timers = {}
+        for name, var in self._monitored_variables.items():
+            self._monitor_timers[name] = var.period
+        print(self._monitor_timers)
 
     def _timer_tick(self):
         for name, var in self._monitored_variables.items():
