@@ -78,17 +78,26 @@ class VariableDisplay(QWidget):
             item.setTextAlignment(Qt.AlignCenter)
             item.setFlags(Qt.ItemIsEnabled | Qt.ItemNeverHasChildren)
             self._display.setItem(row, 2, item)
-
-            item = QTableWidgetItem('')
-            item.setTextAlignment(Qt.AlignCenter)
-            item.setFlags(Qt.ItemIsEnabled | Qt.ItemNeverHasChildren)
-            self._display.setItem(row, 3, item)
+            ###
+            #
+            #   Show content of variable
+            #
+            ###
+            self._show_content(row,var)
             
             row += 1
     
+    def _show_content(self, row, var):
+            item = QTableWidgetItem(var.content)
+            item.setTextAlignment(Qt.AlignCenter)
+            item.setFlags(Qt.ItemIsEnabled | Qt.ItemNeverHasChildren)
+            self._display.setItem(row, 3, item)
+
     def _variable_change(self, var):
-        print(var.name)
-        
+        result = self._display.findItems(var.name, Qt.MatchExactly)
+        item = result[0]
+        self._show_content(item.row(), var)
+
     def _play_pause_clicked(self):
         button = self.sender()
         gl = button.mapToGlobal(QPoint())

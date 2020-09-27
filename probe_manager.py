@@ -106,6 +106,7 @@ class ProbeManager():
                     #   TODO Request the probe reads this variable
                     #
                     ###
+                    self._monitored_variables[name].content = 'value here'
                     self._pubSub.send_variable_change(self._monitored_variables[name])
                 else:
                     self._monitor_timers[name] -= self._tick_period
