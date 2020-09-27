@@ -61,6 +61,15 @@ TOPIC_MONITORED_DB = 'root.monitored_database'
 #       variable monitoring
 TOPIC_MONITOR_VARIABLE = 'root.monitor_variable'
 
+
+###
+#
+#   Variable content change:
+#       The probe sends updated values with this.
+#
+TOPIC_VARIABLE_CHANGE = 'root.variable_change'
+
+
 class Ctx_PubSub():
     __instance = None
 
@@ -101,7 +110,7 @@ class Ctx_PubSub():
     #   Send message to indicated ELF is loaded
     #
     def send_loaded_elf_file(self, datbase):
-        pub.sendMessage(TOPIC_ELF_FILE_LOADED, symbols = datbase)
+        pub.sendMessage(TOPIC_ELF_FILE_LOADED, symbols=datbase)
 
     ###
     #
@@ -117,12 +126,19 @@ class Ctx_PubSub():
     def send_monitored_database(self, database):
         pub.sendMessage(TOPIC_MONITORED_DB, monitored=database)
 
-     ###
+    ###
     #
     #   Request the given variable be monitored
     #
     def send_monitor_variable(self, variable):
         pub.sendMessage(TOPIC_MONITOR_VARIABLE, monitor=variable)
+
+    ###
+    #
+    #   Send variable content changed
+    #
+    def send_variable_change(self, variable):
+        pub.sendMessage(TOPIC_VARIABLE_CHANGE, var=variable)
 
    ##########
     #
@@ -165,6 +181,12 @@ class Ctx_PubSub():
     def subscribe_monitor_variable(self, listener):
         pub.subscribe(listener, TOPIC_MONITOR_VARIABLE)
 
+    ###
+    #
+    #   Subscribe to variable change
+    #
+    def subscribe_variable_change(self, listener):
+        pub.subscribe(listener, TOPIC_VARIABLE_CHANGE)
 
 
 def myElf_Listener(elf_file):

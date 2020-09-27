@@ -208,10 +208,13 @@ def demo():
                 probe.sendCommand('vAttach;1', False)
                 response = probe.getResponse()
 
-                probe.readMemory_8(0x20000000)
-                probe.readMemory_16(0x20000000)
-                probe.readMemory_32(0x20000000)
-                probe.readMemory_64(0x20000000)
+                # probe.readMemory_8(0x20000000)
+                # probe.readMemory_16(0x20000000)
+                # probe.readMemory_32(0x20000000)
+                # probe.readMemory_64(0x20000000)
+
+
+
                 # Read memory as a test
                 # probe.sendCommand('m20000000,4', False)
                 # value = probe.getResponse()

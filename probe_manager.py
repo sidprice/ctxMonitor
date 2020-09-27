@@ -101,7 +101,12 @@ class ProbeManager():
             if (self._monitored_variables[name].enable):
                 if (period < self._tick_period):
                     self._monitor_timers[name] = self._monitored_variables[name].period
-                    print(f'Get contents of {name}')
+                    ###
+                    #
+                    #   TODO Request the probe reads this variable
+                    #
+                    ###
+                    self._pubSub.send_variable_change(self._monitored_variables[name])
                 else:
                     self._monitor_timers[name] -= self._tick_period
 

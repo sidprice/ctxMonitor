@@ -36,6 +36,13 @@ class VariableDisplay(QWidget):
         self._display.verticalHeader().hide()
         self._layout.addWidget(self._display)
         self.setLayout(self._layout)
+        ###
+        #
+        #   Subscribe to variable content changes
+        #
+        ###
+        pubSub = Ctx_PubSub.getInstance()
+        pubSub.subscribe_variable_change(self._variable_change)
 
     def init(self, monitored_variables):
         self._monitored_variables = monitored_variables
@@ -79,6 +86,9 @@ class VariableDisplay(QWidget):
             
             row += 1
     
+    def _variable_change(self, var):
+        print(var.name)
+        
     def _play_pause_clicked(self):
         button = self.sender()
         gl = button.mapToGlobal(QPoint())

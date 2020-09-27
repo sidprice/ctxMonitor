@@ -9,13 +9,14 @@ import json
 
 
 class Variable:
-    def __init__(self, name, address, period=CtxTiming.Period_Default, enable=False):
+    def __init__(self, name, address, period=CtxTiming.Period_Default, enable=False, content=None):
         super().__init__()
 
         self.name = name
         self.address = address
         self.period = period
         self.enable = enable
+        self.content = content
 
     @staticmethod
     def decode_variable(o):
