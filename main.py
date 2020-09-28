@@ -176,6 +176,12 @@ class MainWindow(QMainWindow):
             self._pubSub.send_load_elf_file(elf_filename=elf_file)
             self.setWindowTitle(self._mainWindowTitle + '  -  ' + os.path.basename(elf_file))
             self.statusBar().showMessage(elf_file + ' ... Loading', 2000)
+        #####
+        #
+        #   Time to connect to the probe
+        #
+        #####
+        self._probeManager.connect_to_probe()
 
 
     def _menu_setup(self, d, parent=None):

@@ -9,6 +9,7 @@ from ctx_pubsub import Ctx_PubSub
 from PyQt5.QtCore import QTime, QTimer
 from ctx_timing import CtxTiming
 from variable import Variable
+from probe import Probe
 
 class ProbeManager():
     __instance = None
@@ -58,6 +59,31 @@ class ProbeManager():
         self._pubSub.subscribe_monitor_variable(self._listener_monitor_variable)
         self._pubSub.subscribe_monitored_database(self._listener_monitor_database)
 
+    def connect_to_probe(self):
+        self._probe = Probe('COM12')
+        if (self._probe.isConnected()):
+            print('Connected')
+            ###
+            #
+            #   Scan the target
+            #
+            ###
+            self._probe.sendCommand('s')
+            while True:
+                '''
+                    Loop here reading resonses until "OK" is received
+                '''
+                response = self._probe.getResponse()
+                if response != None:
+                    if response == "OK":
+                        break
+                    print(response, end=' ')
+            self._probe.sendCommand('vAttach;1', False)
+            response = self._probe.getResponse()
+            print(response)
+        else:
+            print('Connect failed')
+
     def _listener_monitor_database(self, monitored):
         self._monitored_variables = {}
         for name, var in monitored.items():
@@ -106,7 +132,8 @@ class ProbeManager():
                     #   TODO Request the probe reads this variable
                     #
                     ###
-                    self._monitored_variables[name].content = 'value here'
+                    result = self._probe.readMemory_32(self._monitored_variables[name].address)
+                    self._monitored_variables[name].content = result
                     self._pubSub.send_variable_change(self._monitored_variables[name])
                 else:
                     self._monitor_timers[name] -= self._tick_period
