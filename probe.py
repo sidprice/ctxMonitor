@@ -7,10 +7,13 @@ import utilities
 class Probe:
     _OK = 'OK'
 
-    def __init__(self, serial_instance):
+    def __init__(self, connection):
         super().__init__()
 
-        self.serial = serial_instance
+        try:
+            self.serial = serial.Serial(connection, 115200, timeout=10)
+        except serial.SerialException:
+            raise
 
     def _sendAck(self):
         self.serial.write('+'.encode())
@@ -177,9 +180,11 @@ class Probe:
         return value
 
     def readMemory_32(self, address):
-        command = f'm{format(address, "x")},4'
+        #command = f'm{format(address, "x")},4'
+        command = f'm{address},4'
         value = self._memoryRead(command)
-        print(f'Memory address {hex(address)} contains {value}')
+        #print(f'Memory address {hex(address)} contains {value}')
+        print(f'Memory address {address} contains {value}')
         return value
 
     def readMemory_64(self, address):
@@ -191,40 +196,39 @@ class Probe:
 
 def demo():
     try:
-        with serial.Serial('COM8', 115200, timeout=10) as serial_instance:
-            probe = Probe(serial_instance)
-            sleep(2)
-            if probe.isConnected() == True:
-                probe.sendCommand('s')
-                while True:
-                    '''
-                        Loop here reading resonses until "OK" is received
-                    '''
-                    response = probe.getResponse()
-                    if response != None:
-                        if response == "OK":
-                            break
-                        print(response, end=' ')
-                probe.sendCommand('vAttach;1', False)
+        probe = Probe('COM12')
+        #sleep(2)
+        if probe.isConnected() == True:
+            probe.sendCommand('s')
+            while True:
+                '''
+                    Loop here reading resonses until "OK" is received
+                '''
                 response = probe.getResponse()
+                if response != None:
+                    if response == "OK":
+                        break
+                    print(response, end=' ')
+            probe.sendCommand('vAttach;1', False)
+            response = probe.getResponse()
 
-                # probe.readMemory_8(0x20000000)
-                # probe.readMemory_16(0x20000000)
-                # probe.readMemory_32(0x20000000)
-                # probe.readMemory_64(0x20000000)
+            # probe.readMemory_8(0x20000000)
+            # probe.readMemory_16(0x20000000)
+            probe.readMemory_32(0x20000000)
+            # probe.readMemory_64(0x20000000)
 
 
 
-                # Read memory as a test
-                # probe.sendCommand('m20000000,4', False)
-                # value = probe.getResponse()
+            # Read memory as a test
+            # probe.sendCommand('m20000000,4', False)
+            # value = probe.getResponse()
 
-                # value = utilities.integerFromAsciiHex(value)
-                # result = utilities.integerToHexDisplayValue(value)
+            # value = utilities.integerFromAsciiHex(value)
+            # result = utilities.integerToHexDisplayValue(value)
 
-                # print(f'Memory address 0x20000000 contains {result}')
-            else:
-                print('Failed to connect')
+            # print(f'Memory address 0x20000000 contains {result}')
+        else:
+            print('Failed to connect')
     except Exception as ex:
         print(ex)
 
