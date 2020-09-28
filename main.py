@@ -248,7 +248,7 @@ class MainWindow(QMainWindow):
 
     def _listener_monitored(self, monitored):
         self._monitored_variables = monitored
-        self._monitored.init(monitored)
+        #self._monitored.init(monitored)
 
 
 if __name__ == '__main__':
