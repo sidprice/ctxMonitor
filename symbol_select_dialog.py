@@ -18,11 +18,10 @@ from ctx_timing import CtxTiming
 
 class SelectSymbol(QtWidgets.QDialog):
 
-    def __init__(self, variables, monitored_variables):
+    def __init__(self, variables):
         super().__init__()
 
         self._variables = variables
-        self._monitored_variables = dict(monitored_variables)
 
         self.setWindowTitle('Select Symbol')
         #
@@ -73,13 +72,12 @@ class SelectSymbol(QtWidgets.QDialog):
     def _okButtonPressed(self):
         ###
         #
-        #   Broadcast the monitored variables list changed
+        #   Broadcast the monitored variables
         #
         ###
         pubSub = Ctx_PubSub.getInstance()
-        #pubSub.send_monitored_database(database=self._monitored_variables)
-        for name, var in self._monitored_variables.items():
-            pubSub.send_add_monitor_variable(var)
+        for name, var in self._variables.items():
+            pubSub.send_variable_changed(var)
         self.close()
 
     def _cancelButtonPressed(self):
@@ -99,17 +97,20 @@ class SelectSymbol(QtWidgets.QDialog):
             checkBox = QCheckBox(checkboxWidget)
             checkBox.clicked.connect(self._check_changed)
             #
-            #   If the variable is in the monitored list
+            #   If the variable is monitored
             #   check the checkbox and save the period
             #   for display later
             #
             isMonitored = False
-            if (self._monitored_variables != None):
-                if (name in self._monitored_variables):
+            if name in self._variables:
+                if self._variables[name].monitored:
                     isMonitored = True
+
+
+
             if (isMonitored):
                 checkBox.setCheckState(Qt.CheckState.Checked)
-                period = self._monitored_variables[name].period
+                period = self._variables[name].period
             else:
                 checkBox.setCheckState(Qt.CheckState.Unchecked)
                 period = None
@@ -135,7 +136,7 @@ class SelectSymbol(QtWidgets.QDialog):
             item.addItems(CtxTiming.Periods)
             if (isMonitored):
                 item.setEnabled(True)
-                index = item.findText(CtxTiming.text_from_period(self._monitored_variables[name].period))
+                index = item.findText(CtxTiming.text_from_period(self._variables[name].period))
                 item.setCurrentIndex(index)
             else:
                 item.setEnabled(False)
@@ -154,11 +155,8 @@ class SelectSymbol(QtWidgets.QDialog):
         row = ix.row()
         column = ix.column()
         name = (self._variables_view.item(row, 1)).text()
-        var = self._monitored_variables[name]
         comboBox = self._variables_view.cellWidget(row, column)
-        period = CtxTiming.period_from_text(comboBox.currentText())
-        var.period = period
-        #self._monitored_variables[name] = var
+        self._variables[name].period = CtxTiming.period_from_text(comboBox.currentText())
 
     def _check_changed(self):
         cb = self.sender()
@@ -171,32 +169,35 @@ class SelectSymbol(QtWidgets.QDialog):
         name = (self._variables_view.item(row, 1)).text()
         comboBox = self._variables_view.cellWidget(row, 3)
         period = CtxTiming.period_from_text(comboBox.currentText())
-        if (cb.isChecked()):
-            address = self._variables[name].address
-            ##
-            #
-            #   Update or create a monitor entry
-            #
-            ##
-            if (name in self._monitored_variables):
-                var = self._monitored_variables[name]
-                var.period = period
-            else:
-                var = Variable(name, address, period)
-            self._monitored_variables[name] = var
-            ##
-            #
-            #   Ensure the period cell is enable for editing
-            #
-            ##
-            self._variables_view.cellWidget(row, 3).setEnabled(True)
-        else:
-            ##
-            #
-            #   Remove the variable from the monitored list
-            #
-            ##
-            del self._monitored_variables[name]
+        self._variables[name].monitored = cb.isChecked()
+        self._variables_view.cellWidget(row, 3).setEnabled(True)
+        # if (cb.isChecked()):
+        #     address = self._variables[name].address
+        #     ##
+        #     #
+        #     #   Update or create a monitor entry
+        #     #
+        #     ##
+        #     if (name in self._monitored_variables):
+        #         var = self._monitored_variables[name]
+        #         var.period = period
+        #     else:
+        #         var = Variable(name, address, period)
+        #         var.monitored = True
+        #     self._monitored_variables[name] = var
+        #     ##
+        #     #
+        #     #   Ensure the period cell is enable for editing
+        #     #
+        #     ##
+        #     self._variables_view.cellWidget(row, 3).setEnabled(True)
+        # else:
+        #     ##
+        #     #
+        #     #   Remove the variable from the monitored list
+        #     #
+        #     ##
+        #     del self._monitored_variables[name]
 
 
 if __name__ == '__main__':

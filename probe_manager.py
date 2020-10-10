@@ -56,8 +56,9 @@ class ProbeManager():
         #   
         ###
         self._pubSub = Ctx_PubSub.getInstance()
-        self._pubSub.subscribe_add_monitor_variable(self._listener_monitor_variable)
-        self._pubSub.subscribe_monitored_database(self._listener_monitor_database)
+        # TODO Need to subscribe to what vars to monitor
+        # self._pubSub.subscribe_add_monitor_variable(self._listener_monitor_variable)
+        # self._pubSub.subscribe_monitored_database(self._listener_monitor_database)
 
     def connect_to_probe(self):
         self._probe = Probe('COM8')

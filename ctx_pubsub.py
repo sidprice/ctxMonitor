@@ -46,31 +46,17 @@ TOPIC_ELF_FILE_CLOSE = 'root.close_elf_file'
 
 ###
 #
-#   Subscribe to the database of monitored variables:
+#   Variable content change:
+#       The probe sends updated values with this.
 #
-#       The VariableManager or Monitor Select Dialog
-#       sends the database to this topic when it changes
-TOPIC_MONITORED_DB = 'root.monitored_database'
-
-###
-#
-#   Variable added to monitor list:
-#
-TOPIC_ADD_MONITOR_VARIABLE = 'root.add.monitor_variable'
-
-###
-#
-#   Variable added to monitor list:
-#
-TOPIC_REMOVE_MONITOR_VARIABLE = 'root.add.monitor_variable'
+TOPIC_VARIABLE_CHANGED = 'root.variable_changed'
 
 ###
 #
 #   Variable content change:
 #       The probe sends updated values with this.
 #
-TOPIC_VARIABLE_CHANGE = 'root.variable_change'
-
+TOPIC_VARIABLE_CONTENT_CHANGED = 'root.variable_content_changed'
 
 class Ctx_PubSub():
     __instance = None
@@ -123,31 +109,17 @@ class Ctx_PubSub():
 
     ###
     #
-    #   Send the given database to listeners
+    #   Send variable changed
     #
-    def send_monitored_database(self, database):
-        pub.sendMessage(TOPIC_MONITORED_DB, monitored=database)
-
-    ###
-    #
-    #   Request the given variable be monitored
-    #
-    def send_add_monitor_variable(self, variable):
-        pub.sendMessage(TOPIC_ADD_MONITOR_VARIABLE, monitor=variable)
-
-    ###
-    #
-    #   Request the given variable be  removed from monitoring
-    #
-    def send_remove_monitor_variable(self, variable):
-        pub.sendMessage(TOPIC_REMOVE_MONITOR_VARIABLE, monitor=variable)
+    def send_variable_changed(self, variable):
+        pub.sendMessage(TOPIC_VARIABLE_CHANGED, var=variable)
 
     ###
     #
     #   Send variable content changed
     #
-    def send_variable_change(self, variable):
-        pub.sendMessage(TOPIC_VARIABLE_CHANGE, var=variable)
+    def send_variable_content_changed(self, variable):
+        pub.sendMessage(TOPIC_VARIABLE_CONTENT_CHANGED, var=variable)
 
    ##########
     #
@@ -178,32 +150,17 @@ class Ctx_PubSub():
 
     ###
     #
-    #   Subscribe to the monitored database topic
-    #
-    def subscribe_monitored_database(self, listener):
-        pub.subscribe(listener, TOPIC_MONITORED_DB)
-
-    ###
-    #
-    #   Subscribe to the add monitored variable topic
-    #
-    def subscribe_add_monitor_variable(self, listener):
-        pub.subscribe(listener, TOPIC_ADD_MONITOR_VARIABLE)
-
-    ###
-    #
-    #   Subscribe to the remove monitored variable topic
-    #
-    def subscribe_remove_monitor_variable(self, listener):
-        pub.subscribe(listener, TOPIC_REMOVE_MONITOR_VARIABLE)
-
-    ###
-    #
     #   Subscribe to variable change
     #
-    def subscribe_variable_change(self, listener):
-        pub.subscribe(listener, TOPIC_VARIABLE_CHANGE)
+    def subscribe_variable_changed(self, listener):
+        pub.subscribe(listener, TOPIC_VARIABLE_CHANGED)
 
+    ###
+    #
+    #   Subscribe to variable content changed
+    #
+    def subscribe_variable_content_change(self, listener):
+        pub.subscribe(listener, TOPIC_VARIABLE_CONTENT_CHANGED)
 
 def myElf_Listener(elf_file):
     print(elf_file)

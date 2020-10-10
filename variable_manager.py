@@ -48,22 +48,11 @@ class VariableManager():
             # Subscribe to elf file close requests
             #
             self._pubsub.subscribe_close_elf_file(self._listener_elf_file_close)
-            #
-            # Subscribe to monitored variables database
-            #
-            # self._pubsub.subscribe_monitored_database(self._listener_monitored_database)
-            #
-            # And changes to monitored variables
-            #
-            self._pubsub.subscribe_add_monitor_variable(self._listener_monitor_variable)
+            self._pubsub.subscribe_variable_changed(self._listener_variable_changed)
 
-    ##########
-    #
-    #   1.  Load the set of variables from the passed ELF file
-    #   2.  If a MON file with the same filename exists, load it to monitored
-    #   3.  Update any monitored entries from the variables
-    #
-    ##########
+    def close(self):
+        self._save_monitored_variables()
+
     def _listener_elf_file_load(self, elf_file):
         ##
         #
@@ -74,7 +63,8 @@ class VariableManager():
         self._symbols = myVariables.Load(elf_file)
         ##
         #
-        #   2.  If a MON file with the same filename exists, load it to monitored
+        #   2.  If a MON file with the same filename exists, load it and
+        #           update entries in variables database
         #
         ##
         self._monitor_filepath = self._get_monitor_filename(elf_file)
@@ -87,20 +77,23 @@ class VariableManager():
                 self._monitored = json.load(monFid, object_hook=Variable.decode_variable)
         ##
         #
-        #   3.  If we have monitored variables make sure their data
-        #       is up-to-date with the loaded symbols
+        #   3.  If we have monitored variables make sure the entries
+        #           in the variables database is updated
         #
         ##
         if (self._monitored != None):
             for name, var in self._monitored.items():
-                sym = self._symbols[name]
-                var.address = sym.address
-                #
-                #   Send the monitored variable to listeners
-                #
-                self._pubsub.send_add_monitor_variable(variable=var)
+                self._symbols[name] = var.copy()
+                # self._symbols[name].monitored = True
+                # self._symbols[name].period = var.period
+        ##
+        #
+        #   Publish the loaded symbols
+        #
+        ##
+        for name, var in self._symbols.items():
+            self._pubsub.send_variable_changed(var)
 
-        self._listener_monitored_database(self._monitored)
         self._pubsub.send_loaded_elf_file(self._symbols)
 
     def _get_monitor_filename(self, elf_filename):
@@ -111,21 +104,18 @@ class VariableManager():
         monPath = path / fileName  # filepath for the associated "mon" file
         return monPath
 
+    def _save_monitored_variables(self):
+        with open(self._monitor_filepath, 'w') as file:
+            json.dump(self._monitored, file, cls=VariableEncoder, indent=4)
+
     def _listener_elf_file_close(self):
         self._symbols = None
         self._pubsub.send_loaded_elf_file(self._symbols)
 
-    def _listener_monitor_variable(self, monitor):
-        print(monitor)
-        self._monitored[monitor.name] = monitor.copy()
-        self._listener_monitored_database(self._monitored)
+    def _listener_variable_changed(self, var):
+        if var.monitored:
+            self._monitored[var.name] = var.copy()
+        else:
+            if var.name in self._monitored:
+                del self._monitored[var.name]
 
-    def _listener_monitored_database(self, monitored):
-        self._monitored = dict(monitored)
-        #####
-        #
-        #   Save the passed monitored variables list
-        #
-        #####
-        with open(self._monitor_filepath, 'w') as file:
-            json.dump(self._monitored, file, cls=VariableEncoder, indent=4)
