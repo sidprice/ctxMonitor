@@ -23,7 +23,7 @@ class VariableDisplay(QWidget):
     def __init__(self, parent):
         super().__init__(parent)
 
-        self._monitored_variables = {}
+        self._variables = {}
         self._layout = QHBoxLayout()
         self._display = QTableWidget()
         self._display.accessibleName = 'displayTableWidget'
@@ -42,41 +42,21 @@ class VariableDisplay(QWidget):
         self.setLayout(self._layout)
         ###
         #
-        #   Subscribe to variable content changes
+        #   Subscribe to variable database changes
         #
         ###
         pubSub = Ctx_PubSub.getInstance()
-        pubSub.subscribe_variable_change(self._variable_change)
-        pubSub.subscribe_monitor_variable(self._listener_monitor_variable)
+        pubSub.subscribe_variable_changed(self._listener_variable_changed)
 
-    def _listener_monitor_variable(self, monitor):
-        row = self._display.rowCount()
-        try:
-            test = self._monitored_variables[monitor.name]  # already in the list?
-            ##
-            #
-            #  If we get here the variable is already being displayed so just update it
-            #
-            ##
-            self._variable_change(monitor)
-        except:
-            ##
-            #
-            #   If we get here the variable is not displayed yet
-            #
-            ##
-            self._monitored_variables[monitor.name] = Variable( name=monitor.name, address=monitor.address, period=monitor.period, enable=monitor.enable)
-            self._displayVariable(row, monitor)
-
-    def init(self, monitored_variables):
-        self._monitored_variables = dict(monitored_variables)
+    def init(self):
 
         self._display.blockSignals(True)
         self._display.clearContents()
         row = 0
-        for name, var in self._monitored_variables.items():
-            self._displayVariable(row, var)
-            row += 1
+        for name, var in self._variables.items():
+            if var.monitored == True:
+                self._displayVariable(row, var)
+                row += 1
 
     def _displayVariable(self, row, var):
         self._display.setRowCount(row+1)
@@ -119,7 +99,19 @@ class VariableDisplay(QWidget):
         item.setFlags(Qt.ItemIsEnabled | Qt.ItemNeverHasChildren)
         self._display.setItem(row, 3, item)
 
-    def _variable_change(self, var):
+    def _listener_variable_changed(self, var):
+        self._variables[var.name] = var.copy()
+
+        if var.monitored:
+            result = self._display.findItems(var.name, Qt.MatchExactly)
+            if len(result):
+                item = result[0]
+                row = item.row()
+            else:
+                row = self._display.rowCount()
+            self._displayVariable(row, self._variables[var.name])
+
+    def _listener_variable_content_changed(self, var):
         result = self._display.findItems(var.name, Qt.MatchExactly)
         item = result[0]
         self._show_content(item.row(), var)
@@ -133,13 +125,12 @@ class VariableDisplay(QWidget):
         #
         row = ix.row()
         name = (self._display.item(row, 1)).text()
-        enable = not self._monitored_variables[name].enable
-        self._monitored_variables[name].enable = enable
+        enable = not self._variables[name].enable
+        self._variables[name].enable = enable
         if (enable):
             icon = QIcon('icons/pause.png')
         else:
             icon = QIcon('icons/run.png')
         button.setIcon(icon)
         pubsub = Ctx_PubSub.getInstance()
-        #pubsub.send_monitored_database(database=self._monitored_variables)
-        pubsub.send_monitor_variable(self._monitored_variables[name])
+        pubsub.send_variable_changed(self._variables[name])

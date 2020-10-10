@@ -71,7 +71,6 @@ class MainWindow(QMainWindow):
     _aboutTip = 'Show application properties'
     #
     _variables = dict({})  # The symbols read from the ELF file
-    _monitored_variables = dict({})
     _pubsub = None
 
     def __init__(self):
@@ -151,8 +150,8 @@ class MainWindow(QMainWindow):
         #       new widget
         #
         ####
-        self._monitored = VariableDisplay(self)
-        self.layout.addWidget(self._monitored, 0, 0)
+        self._display = VariableDisplay(self)
+        self.layout.addWidget(self._display, 0, 0)
 
         self.show()
 
@@ -162,7 +161,7 @@ class MainWindow(QMainWindow):
         #                                                #
         ##################################################
 
-        self._pubSub.subscribe_monitor_variable(self._listener_monitor_variable)
+        #self._pubSub.subscribe_add_monitor_variable(self._listener_monitor_variable)
         self._pubSub.subscribe_loaded_elf_file(self._listener_elf_loaded)
 
         #####
@@ -183,7 +182,6 @@ class MainWindow(QMainWindow):
         #####
         self._probeManager.connect_to_probe()
 
-
     def _menu_setup(self, d, parent=None):
         k = {}
         for name, value in d.items():
@@ -202,6 +200,11 @@ class MainWindow(QMainWindow):
                 parent.addAction(w)
             k[name_safe] = w
         return k
+
+    def closeEvent(self, event):
+        variableManager = VariableManager.getInstance()
+        variableManager.close()
+        return super().closeEvent(event)
 
     def _openElf(self):
         settings = QSettings()
@@ -233,7 +236,7 @@ class MainWindow(QMainWindow):
         self._pubSub.send_close_elf_file()
 
     def _newVariable(self):
-        dialog = SelectSymbol(self._variables, self._monitored_variables)
+        dialog = SelectSymbol(self._variables)
         dialog.exec()
 
     def _listener_elf_loaded(self, symbols):
@@ -241,10 +244,11 @@ class MainWindow(QMainWindow):
         self._variables = symbols
         if symbols != None:
             self._add_variable_menu.setEnabled(True)
+            
         else:
             self._add_variable_menu.setEnabled(False)
             self._close_elf_file_menu.setEnabled(False)
-            self._monitored_variables.clear()
+        self._display.init()
 
     def _listener_monitor_variable(self, monitor):
         self._monitored_variables[monitor.name] = monitor.copy()

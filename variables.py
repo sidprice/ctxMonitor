@@ -2,7 +2,7 @@
 #
 # This class encapsulates access to the target program's global variables
 #
-# It loads the variable names and addresses from a give ELF file and provides
+# It loads the variable names and addresses from a given ELF file and provides
 # an interface to the host program to access them.
 #
 ##########################################################################
