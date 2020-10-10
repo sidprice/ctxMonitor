@@ -52,13 +52,11 @@ class ProbeManager():
         self._timer.start(self._tick_period)
         ###
         #
-        #   Subscribe to variable monitor requests
+        #   Subscribe to variable changes
         #   
         ###
         self._pubSub = Ctx_PubSub.getInstance()
-        # TODO Need to subscribe to what vars to monitor
-        # self._pubSub.subscribe_add_monitor_variable(self._listener_monitor_variable)
-        # self._pubSub.subscribe_monitored_database(self._listener_monitor_database)
+        self._pubSub.subscribe_variable_changed(self._listener_variable_changed)
 
     def connect_to_probe(self):
         self._probe = Probe('COM8')
@@ -85,38 +83,32 @@ class ProbeManager():
         else:
             print('Connect failed')
 
-    def _listener_monitor_database(self, monitored):
-        self._monitored_variables = {}
-        for name, var in monitored.items():
-            newVar = Variable(var.name, var.address, var.period, var.enable)
-            self._monitored_variables[name] = newVar
-        self._updateMonitorTimers()
-
-    def _listener_monitor_variable(self, monitor):
-        ###
-        #
-        #   check if the variable is in the local database and
-        #   update it if found.
-        #
-        #   otherwise add it
-        #
-        ###
-        found =False
-        for name, var in self._monitored_variables.items():
-            if monitor.name == name:
-                ###
-                #
-                #   Update the monitored variable
-                #
-                ###
-                var.address = monitor.address
-                var.period = monitor.period
-                var.enable = monitor.enable
-                found = True
-                break
-        if (found == False):
-            self._monitored_variables[monitor.name] = Variable(monitor.name, monitor.address,monitor.period,monitor.enable)
-        self._updateMonitorTimers()
+    def _listener_variable_changed(self, var):
+        if var.monitored:
+            ###
+            #
+            #   check if the variable is in the local database and
+            #   update it if found.
+            #
+            #   otherwise add it
+            #
+            ###
+            found =False
+            for name, variable in self._monitored_variables.items():
+                if var.name == name:
+                    ###
+                    #
+                    #   Update the monitored variable
+                    #
+                    ###
+                    var.address = variable.address
+                    var.period = variable.period
+                    var.enable = variable.enable
+                    found = True
+                    break
+            if (found == False):
+                self._monitored_variables[var.name] = var.copy()
+            self._updateMonitorTimers()
 
     def _updateMonitorTimers(self):
         self._monitor_timers = {}
@@ -136,6 +128,6 @@ class ProbeManager():
                     if (self._probe.connected):
                         result = self._probe.readMemory_32(self._monitored_variables[name].address)
                         self._monitored_variables[name].content = result
-                        self._pubSub.send_variable_change(self._monitored_variables[name])
+                        self._pubSub.send_variable_content_changed(self._monitored_variables[name])
                 else:
                     self._monitor_timers[name] -= self._tick_period
