@@ -62,7 +62,7 @@ TOPIC_ADD_MONITOR_VARIABLE = 'root.add.monitor_variable'
 #
 #   Variable added to monitor list:
 #
-TOPIC_REMOVE__MONITOR_VARIABLE = 'root.add.monitor_variable'
+TOPIC_REMOVE_MONITOR_VARIABLE = 'root.add.monitor_variable'
 
 ###
 #
@@ -140,7 +140,7 @@ class Ctx_PubSub():
     #   Request the given variable be  removed from monitoring
     #
     def send_remove_monitor_variable(self, variable):
-        pub.sendMessage(TOPIC_REMOVE__MONITOR_VARIABLE, monitor=variable)
+        pub.sendMessage(TOPIC_REMOVE_MONITOR_VARIABLE, monitor=variable)
 
     ###
     #
