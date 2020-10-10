@@ -47,7 +47,7 @@ class VariableDisplay(QWidget):
         ###
         pubSub = Ctx_PubSub.getInstance()
         pubSub.subscribe_variable_change(self._variable_change)
-        pubSub.subscribe_monitor_variable(self._listener_monitor_variable)
+        pubSub.subscribe_add_monitor_variable(self._listener_monitor_variable)
 
     def _listener_monitor_variable(self, monitor):
         row = self._display.rowCount()
@@ -142,4 +142,4 @@ class VariableDisplay(QWidget):
         button.setIcon(icon)
         pubsub = Ctx_PubSub.getInstance()
         #pubsub.send_monitored_database(database=self._monitored_variables)
-        pubsub.send_monitor_variable(self._monitored_variables[name])
+        pubsub.send_add_monitor_variable(self._monitored_variables[name])

@@ -162,7 +162,7 @@ class MainWindow(QMainWindow):
         #                                                #
         ##################################################
 
-        self._pubSub.subscribe_monitor_variable(self._listener_monitor_variable)
+        self._pubSub.subscribe_add_monitor_variable(self._listener_monitor_variable)
         self._pubSub.subscribe_loaded_elf_file(self._listener_elf_loaded)
 
         #####

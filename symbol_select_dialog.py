@@ -79,7 +79,7 @@ class SelectSymbol(QtWidgets.QDialog):
         pubSub = Ctx_PubSub.getInstance()
         #pubSub.send_monitored_database(database=self._monitored_variables)
         for name, var in self._monitored_variables.items():
-            pubSub.send_monitor_variable(var)
+            pubSub.send_add_monitor_variable(var)
         self.close()
 
     def _cancelButtonPressed(self):

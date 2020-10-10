@@ -55,7 +55,7 @@ class VariableManager():
             #
             # And changes to monitored variables
             #
-            self._pubsub.subscribe_monitor_variable(self._listener_monitor_variable)
+            self._pubsub.subscribe_add_monitor_variable(self._listener_monitor_variable)
 
     ##########
     #
@@ -98,7 +98,7 @@ class VariableManager():
                 #
                 #   Send the monitored variable to listeners
                 #
-                self._pubsub.send_monitor_variable(variable=var)
+                self._pubsub.send_add_monitor_variable(variable=var)
 
         self._listener_monitored_database(self._monitored)
         self._pubsub.send_loaded_elf_file(self._symbols)

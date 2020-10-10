@@ -54,13 +54,15 @@ TOPIC_MONITORED_DB = 'root.monitored_database'
 
 ###
 #
-#   Monitor this variable:
-#       The variable Manager sends this..
+#   Variable added to monitor list:
 #
-#       The Probe Manager listens to this topic to setup
-#       variable monitoring
-TOPIC_MONITOR_VARIABLE = 'root.monitor_variable'
+TOPIC_ADD_MONITOR_VARIABLE = 'root.add.monitor_variable'
 
+###
+#
+#   Variable added to monitor list:
+#
+TOPIC_REMOVE__MONITOR_VARIABLE = 'root.add.monitor_variable'
 
 ###
 #
@@ -130,8 +132,15 @@ class Ctx_PubSub():
     #
     #   Request the given variable be monitored
     #
-    def send_monitor_variable(self, variable):
-        pub.sendMessage(TOPIC_MONITOR_VARIABLE, monitor=variable)
+    def send_add_monitor_variable(self, variable):
+        pub.sendMessage(TOPIC_ADD_MONITOR_VARIABLE, monitor=variable)
+
+    ###
+    #
+    #   Request the given variable be  removed from monitoring
+    #
+    def send_remove_monitor_variable(self, variable):
+        pub.sendMessage(TOPIC_REMOVE__MONITOR_VARIABLE, monitor=variable)
 
     ###
     #
@@ -176,10 +185,17 @@ class Ctx_PubSub():
 
     ###
     #
-    #   Subscribe to the monitored variable topic
+    #   Subscribe to the add monitored variable topic
     #
-    def subscribe_monitor_variable(self, listener):
-        pub.subscribe(listener, TOPIC_MONITOR_VARIABLE)
+    def subscribe_add_monitor_variable(self, listener):
+        pub.subscribe(listener, TOPIC_ADD_MONITOR_VARIABLE)
+
+    ###
+    #
+    #   Subscribe to the remove monitored variable topic
+    #
+    def subscribe_remove_monitor_variable(self, listener):
+        pub.subscribe(listener, TOPIC_REMOVE_MONITOR_VARIABLE)
 
     ###
     #
