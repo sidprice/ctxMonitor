@@ -60,8 +60,8 @@ class ProbeManager():
         self._pubSub.subscribe_monitored_database(self._listener_monitor_database)
 
     def connect_to_probe(self):
-        self._probe = Probe('COM12')
-        if (self._probe.isConnected()):
+        self._probe = Probe('COM8')
+        if (self._probe.Connect()):
             print('Connected')
             ###
             #
@@ -129,14 +129,12 @@ class ProbeManager():
                     self._monitor_timers[name] = self._monitored_variables[name].period
                     ###
                     #
-                    #   TODO Request the probe reads this variable
+                    #   Request the probe reads this variable
                     #
                     ###
-                    result = self._probe.readMemory_32(self._monitored_variables[name].address)
-                    self._monitored_variables[name].content = result
-                    self._pubSub.send_variable_change(self._monitored_variables[name])
+                    if (self._probe.connected):
+                        result = self._probe.readMemory_32(self._monitored_variables[name].address)
+                        self._monitored_variables[name].content = result
+                        self._pubSub.send_variable_change(self._monitored_variables[name])
                 else:
                     self._monitor_timers[name] -= self._tick_period
-
-
-

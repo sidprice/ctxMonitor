@@ -141,4 +141,5 @@ class VariableDisplay(QWidget):
             icon = QIcon('icons/run.png')
         button.setIcon(icon)
         pubsub = Ctx_PubSub.getInstance()
-        pubsub.send_monitored_database(database=self._monitored_variables)
+        #pubsub.send_monitored_database(database=self._monitored_variables)
+        pubsub.send_monitor_variable(self._monitored_variables[name])

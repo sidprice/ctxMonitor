@@ -24,7 +24,9 @@ class Variable:
             return Variable(name=o['name'], address=o['address'], period=o['period'], enable=o['enable'])
         return o
 
-
+    def copy(self):
+        return Variable(name=self.name, address=self.address, period=self.period, enable=self.enable, content=self.content)
+        
 class VariableEncoder(json.JSONEncoder):
     def default(self, o):
         if (isinstance(o, Variable)):

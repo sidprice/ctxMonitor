@@ -162,7 +162,7 @@ class MainWindow(QMainWindow):
         #                                                #
         ##################################################
 
-        self._pubSub.subscribe_monitored_database(self._listener_monitored)
+        self._pubSub.subscribe_monitor_variable(self._listener_monitor_variable)
         self._pubSub.subscribe_loaded_elf_file(self._listener_elf_loaded)
 
         #####
@@ -246,9 +246,8 @@ class MainWindow(QMainWindow):
             self._close_elf_file_menu.setEnabled(False)
             self._monitored_variables.clear()
 
-    def _listener_monitored(self, monitored):
-        self._monitored_variables = monitored
-        #self._monitored.init(monitored)
+    def _listener_monitor_variable(self, monitor):
+        self._monitored_variables[monitor.name] = monitor.copy()
 
 
 if __name__ == '__main__':

@@ -51,7 +51,11 @@ class VariableManager():
             #
             # Subscribe to monitored variables database
             #
-            self._pubsub.subscribe_monitored_database(self._listener_monitored_database)
+            # self._pubsub.subscribe_monitored_database(self._listener_monitored_database)
+            #
+            # And changes to monitored variables
+            #
+            self._pubsub.subscribe_monitor_variable(self._listener_monitor_variable)
 
     ##########
     #
@@ -96,7 +100,7 @@ class VariableManager():
                 #
                 self._pubsub.send_monitor_variable(variable=var)
 
-        self._pubsub.send_monitored_database(self._monitored)
+        self._listener_monitored_database(self._monitored)
         self._pubsub.send_loaded_elf_file(self._symbols)
 
     def _get_monitor_filename(self, elf_filename):
@@ -111,6 +115,11 @@ class VariableManager():
         self._symbols = None
         self._pubsub.send_loaded_elf_file(self._symbols)
 
+    def _listener_monitor_variable(self, monitor):
+        print(monitor)
+        self._monitored[monitor.name] = monitor.copy()
+        self._listener_monitored_database(self._monitored)
+
     def _listener_monitored_database(self, monitored):
         self._monitored = dict(monitored)
         #####
@@ -118,7 +127,5 @@ class VariableManager():
         #   Save the passed monitored variables list
         #
         #####
-        json_string = ''
-        json_string = json.dumps(self._monitored, cls=VariableEncoder, indent=4)
         with open(self._monitor_filepath, 'w') as file:
             json.dump(self._monitored, file, cls=VariableEncoder, indent=4)

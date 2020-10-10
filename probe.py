@@ -6,6 +6,7 @@ import utilities
 
 class Probe:
     _OK = 'OK'
+    connected = False
 
     def __init__(self, connection):
         super().__init__()
@@ -155,9 +156,10 @@ class Probe:
         self.sendPacket(output)
 
     # TODO Is this needed and if so, is this the way to check it
-    def isConnected(self):
+    def Connect(self):
         response = self._readInput()
-        return response == self._OK
+        self.connected = response == self._OK
+        return self.connected
 
     def _memoryRead(self, command):
         self.sendCommand(command, False)
@@ -198,7 +200,7 @@ def demo():
     try:
         probe = Probe('COM12')
         #sleep(2)
-        if probe.isConnected() == True:
+        if probe.Connect() == True:
             probe.sendCommand('s')
             while True:
                 '''
