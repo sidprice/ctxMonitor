@@ -10,7 +10,6 @@ from variable_manager import VariableManager
 from probe_manager import ProbeManager
 from widgets.symbol_select_dialog import SelectSymbol
 
-# import widgets.display_monitored_variables_simple as monitorDisplay
 from widgets.variable_display import VariableDisplay
 import sys
 import os
@@ -89,7 +88,7 @@ class MainWindow(QMainWindow):
         # Get the ProbeManger instance, this will create the manager
         #
         self._probeManager = ProbeManager.getInstance()
-       #
+        #
         # Get the VariableManger instance, this will create the manager
         #
         self._variableManager = VariableManager.getInstance()
@@ -109,7 +108,7 @@ class MainWindow(QMainWindow):
                 self._exitMenuName: self.close,
             },
             self._editMenuName: {
-                self._addVariableMenuName: self._newVariable,
+                self._addVariableMenuName: self._editMonitoredVariables,
             },
             self._helpMenuName: {
                 self._aboutMenuName: None,
@@ -161,7 +160,6 @@ class MainWindow(QMainWindow):
         #                                                #
         ##################################################
 
-        #self._pubSub.subscribe_add_monitor_variable(self._listener_monitor_variable)
         self._pubSub.subscribe_loaded_elf_file(self._listener_elf_loaded)
 
         #####
@@ -235,7 +233,7 @@ class MainWindow(QMainWindow):
         settings.remove('File/elf_file')
         self._pubSub.send_close_elf_file()
 
-    def _newVariable(self):
+    def _editMonitoredVariables(self):
         dialog = SelectSymbol(self._variables)
         dialog.exec()
 
@@ -249,9 +247,6 @@ class MainWindow(QMainWindow):
             self._add_variable_menu.setEnabled(False)
             self._close_elf_file_menu.setEnabled(False)
         self._display.init()
-
-    def _listener_monitor_variable(self, monitor):
-        self._monitored_variables[monitor.name] = monitor.copy()
 
 
 if __name__ == '__main__':
