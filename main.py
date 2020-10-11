@@ -8,7 +8,7 @@ from PySide2.QtCore import QFile, QIODevice, Qt
 from ctx_pubsub import Ctx_PubSub
 from variable_manager import VariableManager
 from probe_manager import ProbeManager
-from symbol_select_dialog import SelectSymbol
+from widgets.symbol_select_dialog import SelectSymbol
 
 # import widgets.display_monitored_variables_simple as monitorDisplay
 from widgets.variable_display import VariableDisplay

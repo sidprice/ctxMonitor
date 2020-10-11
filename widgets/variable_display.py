@@ -7,8 +7,6 @@
 #       having a custom widget a more sophisticated display may be easily
 #       added later.
 #
-#   Icons -> https://material.io/resources/icons/?style=baseline
-#
 ##########################################################################
 
 from PySide2.QtWidgets import QWidget, QHBoxLayout, QTableWidget, QTableWidgetItem, QLabel, QToolButton
