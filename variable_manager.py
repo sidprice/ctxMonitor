@@ -84,8 +84,6 @@ class VariableManager():
         if (self._monitored != None):
             for name, var in self._monitored.items():
                 self._symbols[name] = var.copy()
-                # self._symbols[name].monitored = True
-                # self._symbols[name].period = var.period
         ##
         #
         #   Publish the loaded symbols
