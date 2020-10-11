@@ -185,7 +185,6 @@ class Probe:
         #command = f'm{format(address, "x")},4'
         command = f'm{address},4'
         value = self._memoryRead(command)
-        #print(f'Memory address {hex(address)} contains {value}')
         print(f'Memory address {address} contains {value}')
         return value
 
@@ -199,7 +198,6 @@ class Probe:
 def demo():
     try:
         probe = Probe('COM12')
-        #sleep(2)
         if probe.Connect() == True:
             probe.sendCommand('s')
             while True:
