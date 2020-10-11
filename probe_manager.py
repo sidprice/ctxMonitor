@@ -33,6 +33,7 @@ class ProbeManager():
 
     _monitored_variables = {}
     _monitor_timers = {}
+    _probe = None
     
     def __init__(self):
         '''
@@ -101,19 +102,27 @@ class ProbeManager():
                     #   Update the monitored variable
                     #
                     ###
-                    var.address = variable.address
-                    var.period = variable.period
-                    var.enable = variable.enable
+                    variable.address = var.address
+                    variable.period = var.period
+                    variable.enable = var.enable
                     found = True
                     break
             if (found == False):
                 self._monitored_variables[var.name] = var.copy()
             self._updateMonitorTimers()
+            # self._readVariable(self._monitored_variables[var.name])
 
     def _updateMonitorTimers(self):
         self._monitor_timers = {}
         for name, var in self._monitored_variables.items():
-            self._monitor_timers[name] = var.period
+            self._monitor_timers[name] = 1  # force a quick reading on any change of setting
+
+    def _readVariable(self, variable):
+        if not self._probe == None:
+            if (self._probe.connected):
+                result = self._probe.readMemory_32(self._monitored_variables[variable.name].address)
+                self._monitored_variables[variable.name].content = result
+                self._pubSub.send_variable_content_changed(self._monitored_variables[variable.name])
 
     def _timer_tick(self):
         for name, period in self._monitor_timers.items():
@@ -125,9 +134,6 @@ class ProbeManager():
                     #   Request the probe reads this variable
                     #
                     ###
-                    if (self._probe.connected):
-                        result = self._probe.readMemory_32(self._monitored_variables[name].address)
-                        self._monitored_variables[name].content = result
-                        self._pubSub.send_variable_content_changed(self._monitored_variables[name])
+                    self._readVariable(self._monitored_variables[name])
                 else:
                     self._monitor_timers[name] -= self._tick_period

@@ -159,7 +159,7 @@ class Ctx_PubSub():
     #
     #   Subscribe to variable content changed
     #
-    def subscribe_variable_content_change(self, listener):
+    def subscribe_variable_content_changed(self, listener):
         pub.subscribe(listener, TOPIC_VARIABLE_CONTENT_CHANGED)
 
 def myElf_Listener(elf_file):

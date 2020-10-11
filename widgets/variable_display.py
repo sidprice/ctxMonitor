@@ -47,6 +47,7 @@ class VariableDisplay(QWidget):
         ###
         pubSub = Ctx_PubSub.getInstance()
         pubSub.subscribe_variable_changed(self._listener_variable_changed)
+        pubSub.subscribe_variable_content_changed(self._listener_variable_content_changed)
 
     def init(self):
 
@@ -58,8 +59,10 @@ class VariableDisplay(QWidget):
                 self._displayVariable(row, var)
                 row += 1
 
-    def _displayVariable(self, row, var):
-        self._display.setRowCount(row+1)
+    def _displayVariable(self, row, var, update=False):
+        if not update:
+            self._display.setRowCount(row + 1)
+        
         icon_widget = QWidget()
         layout_icon = QHBoxLayout(icon_widget)
 
@@ -107,9 +110,11 @@ class VariableDisplay(QWidget):
             if len(result):
                 item = result[0]
                 row = item.row()
+                update = True
             else:
                 row = self._display.rowCount()
-            self._displayVariable(row, self._variables[var.name])
+                update = False
+            self._displayVariable(row, self._variables[var.name], update)
 
     def _listener_variable_content_changed(self, var):
         result = self._display.findItems(var.name, Qt.MatchExactly)
