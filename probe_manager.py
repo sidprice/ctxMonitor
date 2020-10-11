@@ -110,7 +110,6 @@ class ProbeManager():
             if (found == False):
                 self._monitored_variables[var.name] = var.copy()
             self._updateMonitorTimers()
-            # self._readVariable(self._monitored_variables[var.name])
 
     def _updateMonitorTimers(self):
         self._monitor_timers = {}
