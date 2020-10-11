@@ -65,8 +65,6 @@ class SelectSymbol(QtWidgets.QDialog):
         layout.addLayout(hBox)
 
         self.setLayout(vBox)
-
-        # self._window.show()
         self._displaySymbols()
 
     def _okButtonPressed(self):
@@ -171,34 +169,6 @@ class SelectSymbol(QtWidgets.QDialog):
         period = CtxTiming.period_from_text(comboBox.currentText())
         self._variables[name].monitored = cb.isChecked()
         self._variables_view.cellWidget(row, 3).setEnabled(True)
-        # if (cb.isChecked()):
-        #     address = self._variables[name].address
-        #     ##
-        #     #
-        #     #   Update or create a monitor entry
-        #     #
-        #     ##
-        #     if (name in self._monitored_variables):
-        #         var = self._monitored_variables[name]
-        #         var.period = period
-        #     else:
-        #         var = Variable(name, address, period)
-        #         var.monitored = True
-        #     self._monitored_variables[name] = var
-        #     ##
-        #     #
-        #     #   Ensure the period cell is enable for editing
-        #     #
-        #     ##
-        #     self._variables_view.cellWidget(row, 3).setEnabled(True)
-        # else:
-        #     ##
-        #     #
-        #     #   Remove the variable from the monitored list
-        #     #
-        #     ##
-        #     del self._monitored_variables[name]
-
 
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
