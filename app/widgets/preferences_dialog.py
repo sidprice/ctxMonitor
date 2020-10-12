@@ -25,7 +25,7 @@ class UserPreferences(QtWidgets.QDialog):
         #
         #   Create the controls
         #
-        tabs = QTabWidget()
+        self._tabs = QTabWidget()
         self._ok_button = QPushButton('OK')
         self._ok_button.setFixedWidth(70)
         self._ok_button.clicked.connect(self._okButtonPressed)
@@ -106,9 +106,9 @@ class UserPreferences(QtWidgets.QDialog):
         tabWidget = QWidget()
         tabWidget.setLayout(rootWidget)
 
-        tabs.addTab(tabWidget, 'Options')
+        self._tabs.addTab(tabWidget, 'Options')
         wrapper = QHBoxLayout()
-        wrapper.addWidget(tabs)
+        wrapper.addWidget(self._tabs)
         self.setLayout(wrapper)
 
     def _okButtonPressed(self):
@@ -117,6 +117,8 @@ class UserPreferences(QtWidgets.QDialog):
     def _cancelButtonPressed(self):
         pass
 
+    def _optionsTabUi(self):
+        pass
 
 if __name__ == '__main__':
     import sys
