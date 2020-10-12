@@ -60,7 +60,10 @@ class ProbeManager():
         self._pubSub.subscribe_variable_changed(self._listener_variable_changed)
 
     def connect_to_probe(self):
-        self._probe = Probe('COM8')
+        try:
+            self._probe = Probe('COM8')
+        except:
+            return  # TODO handle error
         if (self._probe.Connect()):
             print('Connected')
             ###

@@ -4,7 +4,6 @@
 #
 ##########################################################################
 
-from PySide2.QtUiTools import QUiLoader
 from PySide2 import QtWidgets
 from PySide2.QtCore import QFile, QIODevice, Qt, QPoint
 from PySide2.QtWidgets import QTableWidgetItem, QVBoxLayout, QHBoxLayout, QPushButton, QTableWidget, QCheckBox, QWidget, QComboBox
