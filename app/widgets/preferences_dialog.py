@@ -19,10 +19,10 @@ class UserPreferences(QtWidgets.QDialog):
         #
         #   Limit the size of the dialog
         #
-        self.setMaximumWidth(550)
-        self.setMinimumWidth(550)
-        self.setMaximumHeight(300)
-        self.setMinimumHeight(300)
+        self.setMaximumWidth(400)
+        self.setMinimumWidth(400)
+        self.setMaximumHeight(200)
+        self.setMinimumHeight(200)
         #
         #   Create the controls
         #
@@ -73,7 +73,7 @@ class UserPreferences(QtWidgets.QDialog):
         self._portWidget.addWidget(self._probePortLabel)
         self._portWidget.addWidget(self._probePortText)
 
-        self._probeTpwrCheckbox = QCheckBox()  #   Probe Power Target hcheckbox
+        self._probeTpwrCheckbox = QCheckBox()  # Probe Power Target hcheckbox
         self._probeTpwrCheckbox.setFixedWidth(100)
         self._probeTpwrCheckbox.setText('Power target')
 
@@ -83,14 +83,15 @@ class UserPreferences(QtWidgets.QDialog):
         self._probeOptionsWidget.addWidget(wrapper)
         self._probeOptionsWidget.addWidget(self._probeTpwrCheckbox)
 
-
     def _createOptionsTabUi(self):
         self._optionDefaultRadixLabel = QLabel()  # default radix label
-        self._optionDefaultRadixLabel.setFixedWidth(100)
+        self._optionDefaultRadixLabel.setFixedWidth(120)
+        #self._optionDefaultRadixLabel.setFixedHeight(60)
         self._optionDefaultRadixLabel.setAlignment(Qt.AlignRight)
         self._optionDefaultRadixLabel.setText('Default display radix:')
 
         self._optionDefaultRadixCombobox = QComboBox()  # default radix combobox
+        #self._optionDefaultRadixCombobox.setFixedHeight(60)
         self._optionDefaultRadixCombobox.setStyleSheet('font-size:12px')
 
         self._radixWidget = QHBoxLayout()  # default radix layout widget
@@ -99,15 +100,16 @@ class UserPreferences(QtWidgets.QDialog):
         self._radixWidget.addWidget(self._optionDefaultRadixCombobox)
 
         self._optionDefaultPeriodLabel = QLabel()  # default period label
-        self._optionDefaultPeriodLabel.setFixedWidth(100)
+        self._optionDefaultPeriodLabel.setFixedWidth(120)
+        self._optionDefaultPeriodLabel.setFixedHeight(60)
         self._optionDefaultPeriodLabel.setAlignment(Qt.AlignRight)
         self._optionDefaultPeriodLabel.setText('Default monitor period:')
 
-        self._optionDefaultPeriodCombobox = QComboBox()   #   default period combobox
+        self._optionDefaultPeriodCombobox = QComboBox()  # default period combobox
         self._optionDefaultPeriodCombobox.setStyleSheet('font-size:12px')
         # self._optionDefaultPeriodCombobox.addItems(CtxTiming.Periods)
 
-        self._periodWidget = QHBoxLayout()    #   default period layout widget
+        self._periodWidget = QHBoxLayout()  # default period layout widget
         self._periodWidget.setAlignment(Qt.AlignLeft)
         self._periodWidget.addWidget(self._optionDefaultPeriodLabel)
         self._periodWidget.addWidget(self._optionDefaultPeriodCombobox)
@@ -127,6 +129,9 @@ class UserPreferences(QtWidgets.QDialog):
         wrapper = QWidget()
         wrapper.setLayout(self._optionsWidget)
         self._tabs.addTab(wrapper, 'Options')
+        wrapper = QWidget()
+        wrapper.setLayout(self._probeOptionsWidget)
+        self._tabs.addTab(wrapper, 'Probe')
 
 
 if __name__ == '__main__':
