@@ -26,12 +26,7 @@ class UserPreferences(QtWidgets.QDialog):
         #   Create the controls
         #
         self._tabs = QTabWidget()
-        self._ok_button = QPushButton('OK')
-        self._ok_button.setFixedWidth(70)
-        self._ok_button.clicked.connect(self._okButtonPressed)
-        self._cancel_button = QPushButton('Cancel')
-        self._cancel_button.setFixedWidth(70)
-        self._cancel_button.clicked.connect(self._cancelButtonPressed)
+        self._createDialogButtons()
         ###
         #   Options TAB controls
         ###
@@ -116,6 +111,14 @@ class UserPreferences(QtWidgets.QDialog):
 
     def _cancelButtonPressed(self):
         pass
+
+    def _createDialogButtons(self):
+        self._ok_button = QPushButton('OK')
+        self._ok_button.setFixedWidth(70)
+        self._ok_button.clicked.connect(self._okButtonPressed)
+        self._cancel_button = QPushButton('Cancel')
+        self._cancel_button.setFixedWidth(70)
+        self._cancel_button.clicked.connect(self._cancelButtonPressed)
 
     def _optionsTabUi(self):
         pass
