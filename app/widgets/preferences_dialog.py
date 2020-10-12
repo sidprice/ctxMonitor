@@ -41,10 +41,13 @@ class UserPreferences(QtWidgets.QDialog):
         self.setLayout(rootWidget)
 
     def _okButtonPressed(self):
-        pass
+        #
+        #   TODO process preferences out of dialog
+        #
+        self.close()
 
     def _cancelButtonPressed(self):
-        pass
+        self.close()
 
     def _createDialogButtons(self):
         self._ok_button = QPushButton('OK')
