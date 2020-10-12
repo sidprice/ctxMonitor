@@ -6,9 +6,10 @@
 
 from PySide2 import QtWidgets
 from PySide2.QtCore import Qt
-from PySide2.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QTabWidget, QPushButton, QLabel, QLineEdit, QComboBox
+from PySide2.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QTabWidget, QPushButton, QLabel, QLineEdit, QComboBox, QCheckBox
 
 # from ctx_timing import CtxTiming
+
 
 class UserPreferences(QtWidgets.QDialog):
 
@@ -25,86 +26,19 @@ class UserPreferences(QtWidgets.QDialog):
         #
         #   Create the controls
         #
-        self._tabs = QTabWidget()
         self._createDialogButtons()
-        ###
-        #   Options TAB controls
-        ###
+        self._createOptionsTabUi()
+        self._createProbeTabUi()
 
-        #   Default radix label
-
-        optionDefaultRadixLabel = QLabel()
-        optionDefaultRadixLabel.setFixedWidth(100)
-        optionDefaultRadixLabel.setAlignment(Qt.AlignRight)
-        optionDefaultRadixLabel.setText('Default display radix:')
-
-        #   Default radix Combobox
-
-        optionDefaultRadixCombobox = QComboBox()
-        optionDefaultRadixCombobox.setStyleSheet('font-size:12px')
-
-        #   Default radix layout widget
-
-        radixWidget = QHBoxLayout()
-        radixWidget.setAlignment(Qt.AlignLeft)
-        radixWidget.addWidget(optionDefaultRadixLabel)
-        radixWidget.addWidget(optionDefaultRadixCombobox)
-
-        #   Default period label
-
-        optionDefaultPeriodLabel = QLabel()
-        optionDefaultPeriodLabel.setFixedWidth(100)
-        optionDefaultPeriodLabel.setAlignment(Qt.AlignRight)
-        optionDefaultPeriodLabel.setText('Default monitor period:')
-
-        #   Default period Combobox
-
-        optionDefaultPeriodCombobox = QComboBox()
-        optionDefaultPeriodCombobox.setStyleSheet('font-size:12px')
-        #optionDefaultPeriodCombobox.addItems(CtxTiming.Periods)
-
-        #   Default period layout widget
-
-        periodWidget = QHBoxLayout()
-        periodWidget.setAlignment(Qt.AlignLeft)
-        periodWidget.addWidget(optionDefaultPeriodLabel)
-        periodWidget.addWidget(optionDefaultPeriodCombobox)
-
-        #   Place options into vertical box
-
-        optionsWidget = QVBoxLayout()
-        wrapper = QWidget()
-        wrapper.setLayout(radixWidget)
-        optionsWidget.addWidget(wrapper)
-        #
-        wrapper = QWidget()
-        wrapper.setLayout(periodWidget)
-        optionsWidget.addWidget(wrapper)
-
-        buttonsWidget = QHBoxLayout()
-        
-        #   Layout buttons
-
-        buttonsWidget.setAlignment(Qt.AlignRight)
-        buttonsWidget.addWidget(self._ok_button)
-        buttonsWidget.addWidget(self._cancel_button)
+        self._combineTabs()
 
         rootWidget = QVBoxLayout()
+        rootWidget.addWidget(self._tabs)
         wrapper = QWidget()
-        wrapper.setLayout(optionsWidget)
-        rootWidget.addWidget(wrapper)
-        #
-        wrapper = QWidget()
-        wrapper.setLayout(buttonsWidget)
+        wrapper.setLayout(self._buttonsWidget)
         rootWidget.addWidget(wrapper)
 
-        tabWidget = QWidget()
-        tabWidget.setLayout(rootWidget)
-
-        self._tabs.addTab(tabWidget, 'Options')
-        wrapper = QHBoxLayout()
-        wrapper.addWidget(self._tabs)
-        self.setLayout(wrapper)
+        self.setLayout(rootWidget)
 
     def _okButtonPressed(self):
         pass
@@ -119,9 +53,81 @@ class UserPreferences(QtWidgets.QDialog):
         self._cancel_button = QPushButton('Cancel')
         self._cancel_button.setFixedWidth(70)
         self._cancel_button.clicked.connect(self._cancelButtonPressed)
+        self._buttonsWidget = QHBoxLayout()
+        self._buttonsWidget.setAlignment(Qt.AlignRight)
+        self._buttonsWidget.addWidget(self._ok_button)
+        self._buttonsWidget.addWidget(self._cancel_button)
 
-    def _optionsTabUi(self):
-        pass
+    def _createProbeTabUi(self):
+        self._probePortLabel = QLabel()  # Probe port label
+        self._probePortLabel.setFixedWidth(100)
+        self._probePortLabel.setAlignment(Qt.AlignRight)
+        self._probePortLabel.setText('Probe port:')
+
+        self._probePortText = QLineEdit()
+        self._probePortText.setFixedWidth(100)
+        self._probePortText.setAlignment(Qt.AlignRight)
+
+        self._portWidget = QHBoxLayout()  # port layout widget
+        self._portWidget.setAlignment(Qt.AlignLeft)
+        self._portWidget.addWidget(self._probePortLabel)
+        self._portWidget.addWidget(self._probePortText)
+
+        self._probeTpwrCheckbox = QCheckBox()  #   Probe Power Target hcheckbox
+        self._probeTpwrCheckbox.setFixedWidth(100)
+        self._probeTpwrCheckbox.setText('Power target')
+
+        self._probeOptionsWidget = QVBoxLayout()  # Place probe settings into vertical box
+        wrapper = QWidget()
+        wrapper.setLayout(self._portWidget)
+        self._probeOptionsWidget.addWidget(wrapper)
+        self._probeOptionsWidget.addWidget(self._probeTpwrCheckbox)
+
+
+    def _createOptionsTabUi(self):
+        self._optionDefaultRadixLabel = QLabel()  # default radix label
+        self._optionDefaultRadixLabel.setFixedWidth(100)
+        self._optionDefaultRadixLabel.setAlignment(Qt.AlignRight)
+        self._optionDefaultRadixLabel.setText('Default display radix:')
+
+        self._optionDefaultRadixCombobox = QComboBox()  # default radix combobox
+        self._optionDefaultRadixCombobox.setStyleSheet('font-size:12px')
+
+        self._radixWidget = QHBoxLayout()  # default radix layout widget
+        self._radixWidget.setAlignment(Qt.AlignLeft)
+        self._radixWidget.addWidget(self._optionDefaultRadixLabel)
+        self._radixWidget.addWidget(self._optionDefaultRadixCombobox)
+
+        self._optionDefaultPeriodLabel = QLabel()  # default period label
+        self._optionDefaultPeriodLabel.setFixedWidth(100)
+        self._optionDefaultPeriodLabel.setAlignment(Qt.AlignRight)
+        self._optionDefaultPeriodLabel.setText('Default monitor period:')
+
+        self._optionDefaultPeriodCombobox = QComboBox()   #   default period combobox
+        self._optionDefaultPeriodCombobox.setStyleSheet('font-size:12px')
+        # self._optionDefaultPeriodCombobox.addItems(CtxTiming.Periods)
+
+        self._periodWidget = QHBoxLayout()    #   default period layout widget
+        self._periodWidget.setAlignment(Qt.AlignLeft)
+        self._periodWidget.addWidget(self._optionDefaultPeriodLabel)
+        self._periodWidget.addWidget(self._optionDefaultPeriodCombobox)
+
+        self._optionsWidget = QVBoxLayout()  # Place options into vertical box
+        wrapper = QWidget()
+        wrapper.setLayout(self._radixWidget)
+        self._optionsWidget.addWidget(wrapper)
+        #
+        wrapper = QWidget()
+        wrapper.setLayout(self._periodWidget)
+        self._optionsWidget.addWidget(wrapper)
+
+
+    def _combineTabs(self):
+        self._tabs = QTabWidget()
+        wrapper = QWidget()
+        wrapper.setLayout(self._optionsWidget)
+        self._tabs.addTab(wrapper, 'Options')
+
 
 if __name__ == '__main__':
     import sys
