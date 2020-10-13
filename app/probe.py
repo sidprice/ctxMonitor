@@ -24,7 +24,10 @@ class Probe:
 
     def _checkAck(self):
         ackCharacter = self.serial.read(1).decode('UTF-8')
-        return ackCharacter == '+'
+        result = True
+        if ackCharacter != '+':
+            result = False
+        return result
 
     def _sendPacket(self, packet):
         '''
@@ -38,6 +41,17 @@ class Probe:
             self.serial.write(output)
             if self._checkAck() == True:
                 break
+
+    def _loopForOK(self):
+        while True:
+            '''
+                Loop here reading resonses until "OK" is received
+            '''
+            response = self.getResponse()
+            if response != None:
+                if response == "OK":
+                    break
+                print(response, end=' ')
 
     def _calculateChecksum(self, inputString):
         asBytes = bytes(inputString, 'UTF-8')
@@ -150,7 +164,7 @@ class Probe:
         else:
             packet = f'${command}'
         checksum = self._calculateChecksum(packet[1:])
-        asbytes = "{:x}".format(checksum)
+        asbytes = "{:02x}".format(checksum)
         checksumString = str(asbytes)
         output = f'{packet}#{checksumString}'
         self.sendPacket(output)
@@ -194,6 +208,13 @@ class Probe:
         print(f'Memory address {hex(address)} contains {value}')
         return value
 
+    def powerTarget(self, enable):
+        command = 'enable'
+        if enable == 0:
+            command = 'disable'
+        command = 'tpwr ' + command
+        self.sendCommand(command, True)
+        _loopForOK()
 
 def demo():
     try:

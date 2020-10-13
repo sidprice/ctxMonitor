@@ -5,11 +5,14 @@
 #
 ##########################################################################
 
-from ctx_pubsub import Ctx_PubSub
 from PyQt5.QtCore import QTime, QTimer
+
+from ctx_pubsub import Ctx_PubSub
 from ctx_timing import CtxTiming
 from variable import Variable
 from probe import Probe
+from preferences import Preferences
+
 
 class ProbeManager():
     __instance = None
@@ -59,10 +62,21 @@ class ProbeManager():
         self._pubSub = Ctx_PubSub.getInstance()
         self._pubSub.subscribe_variable_changed(self._listener_variable_changed)
 
+        self._settings = Preferences.getInstance()
+
     def connect_to_probe(self):
-        self._probe = Probe('COM8')
+        try:
+            port = self._settings.preferences_probe_port()
+            if port != '':
+                self._probe = Probe(port)
+            else:
+                pass    # TODO handle no port set up
+        except:
+            return  # TODO handle error
         if (self._probe.Connect()):
             print('Connected')
+            if self._settings.preferences_probe_power_target() != 0:
+                self._probe.powerTarget(True)
             ###
             #
             #   Scan the target

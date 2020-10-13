@@ -39,6 +39,8 @@ class VariableManager():
             raise Exception('This class is a singleton, use getInstance')
         else:
             VariableManager.__instance = self
+
+            self._monitor_filepath = None
             self._pubsub = Ctx_PubSub.getInstance()
             #
             # Subscribe to elf file loading requests
@@ -103,11 +105,13 @@ class VariableManager():
         return monPath
 
     def _save_monitored_variables(self):
-        with open(self._monitor_filepath, 'w') as file:
-            json.dump(self._monitored, file, cls=VariableEncoder, indent=4)
+        if self._monitor_filepath != None:
+            with open(self._monitor_filepath, 'w') as file:
+                json.dump(self._monitored, file, cls=VariableEncoder, indent=4)
 
     def _listener_elf_file_close(self):
         self._symbols = None
+        self._pubsub.send_closed_elf_file()
         self._pubsub.send_loaded_elf_file(self._symbols)
 
     def _listener_variable_changed(self, var):

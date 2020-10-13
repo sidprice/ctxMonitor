@@ -46,6 +46,7 @@ class VariableDisplay(QWidget):
         pubSub = Ctx_PubSub.getInstance()
         pubSub.subscribe_variable_changed(self._listener_variable_changed)
         pubSub.subscribe_variable_content_changed(self._listener_variable_content_changed)
+        pubSub.subscribe_closed_elf_file(self._listener_elf_closed)
 
     def init(self):
 
@@ -118,6 +119,10 @@ class VariableDisplay(QWidget):
         result = self._display.findItems(var.name, Qt.MatchExactly)
         item = result[0]
         self._show_content(item.row(), var)
+
+    def _listener_elf_closed(self):
+        self._display.setRowCount(0)
+        self._variables.clear()
 
     def _play_pause_clicked(self):
         button = self.sender()

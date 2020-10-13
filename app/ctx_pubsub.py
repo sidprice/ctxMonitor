@@ -46,6 +46,11 @@ TOPIC_ELF_FILE_CLOSE = 'root.close_elf_file'
 
 ###
 #
+#   The current ELF file was closed
+TOPIC_ELF_FILE_CLOSED = 'root.closed_elf_file'
+
+###
+#
 #   Variable content change:
 #       The probe sends updated values with this.
 #
@@ -109,6 +114,13 @@ class Ctx_PubSub():
 
     ###
     #
+    #   Send message to when elf file is closed
+    #
+    def send_closed_elf_file(self):
+        pub.sendMessage(TOPIC_ELF_FILE_CLOSED)
+
+    ###
+    #
     #   Send variable changed
     #
     def send_variable_changed(self, variable):
@@ -147,6 +159,13 @@ class Ctx_PubSub():
     #
     def subscribe_close_elf_file(self, listener):
         pub.subscribe(listener, TOPIC_ELF_FILE_CLOSE)
+
+    ###
+    #
+    #   Subscribe to the elf closed topic
+    #
+    def subscribe_closed_elf_file(self, listener):
+        pub.subscribe(listener, TOPIC_ELF_FILE_CLOSED)
 
     ###
     #

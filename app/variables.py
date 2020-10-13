@@ -10,7 +10,7 @@
 from elftools.elf.sections import SymbolTableSection
 from elftools.elf.elffile import ELFFile
 from variable import Variable
-import utils
+import utilities
 
 class Variables:
     def __init__(self):
@@ -42,7 +42,7 @@ class Variables:
                         # TODO Do something better than this compare, not all variables will be above 0x20000000
 
                         if value >= 0x20000000:
-                            newVariable = Variable(symbol.name, utils.format_hex(value, 8, False, False))
+                            newVariable = Variable(symbol.name, utilities.format_hex(value, 8, False, False))
                             self._variables[symbol.name] = newVariable
             return self._variables
         return None

@@ -1,6 +1,6 @@
 import ctypes
 from PySide2.QtGui import QIcon
-from PyQt5.QtCore import QSettings, QCoreApplication
+from PyQt5.QtCore import QCoreApplication
 from PySide2.QtWidgets import QApplication, QWidget, QMainWindow, QMenuBar, QMenu, QAction, QFileDialog, QDialog, QTableWidgetItem, QStatusBar, QGridLayout
 from PySide2.QtWidgets import QLabel, QLineEdit, QPushButton
 from PySide2.QtUiTools import QUiLoader
@@ -9,7 +9,8 @@ from ctx_pubsub import Ctx_PubSub
 from variable_manager import VariableManager
 from probe_manager import ProbeManager
 from widgets.symbol_select_dialog import SelectSymbol
-
+from widgets.preferences_dialog import UserPreferences
+from preferences import Preferences
 from widgets.variable_display import VariableDisplay
 import sys
 import os
@@ -39,7 +40,8 @@ class MainWindow(QMainWindow):
     _exitMenuName = 'Exit'
     #
     _editMenuName = 'Edit'
-    _addVariableMenuName = 'Edit Variables ...'
+    _editVariablesMenuName = 'Edit Variables ...'
+    _editPreferencesMenuName = 'Edit Preferences ...'
     #
     _helpMenuName = 'Help'
     _aboutMenuName = 'About'
@@ -108,7 +110,8 @@ class MainWindow(QMainWindow):
                 self._exitMenuName: self.close,
             },
             self._editMenuName: {
-                self._addVariableMenuName: self._editMonitoredVariables,
+                self._editVariablesMenuName: self._editMonitoredVariables,
+                self._editPreferencesMenuName: self._editPreferences,
             },
             self._helpMenuName: {
                 self._aboutMenuName: None,
@@ -130,7 +133,7 @@ class MainWindow(QMainWindow):
         #
         #   Edit menu items
         #
-        self._add_variable_menu = self._menu_items[self._editMenuName][self._addVariableMenuName]
+        self._add_variable_menu = self._menu_items[self._editMenuName][self._editVariablesMenuName]
         self._add_variable_menu.setEnabled(False)
         self._add_variable_menu.setStatusTip(self._addVariableTip)
         #
@@ -167,8 +170,8 @@ class MainWindow(QMainWindow):
         #   If we have previously loaded an ELF file, load it again
         #
         #####
-        settings = QSettings()
-        elf_file = settings.value('File/elf_file')
+        self._settings = Preferences.getInstance()
+        elf_file = self._settings.elf_file()
         if (elf_file != None):
             self._pubSub.send_load_elf_file(elf_filename=elf_file)
             self.setWindowTitle(self._mainWindowTitle + '  -  ' + os.path.basename(elf_file))
@@ -205,9 +208,8 @@ class MainWindow(QMainWindow):
         return super().closeEvent(event)
 
     def _openElf(self):
-        settings = QSettings()
         dialog = QFileDialog(self)
-        initial_dir = settings.value('file/open')
+        initial_dir = self._settings.elf_path()
         if (initial_dir != None):
             dialog.setDirectory(initial_dir)
         dialog.setWindowTitle('Select the debug ELF file')
@@ -216,12 +218,10 @@ class MainWindow(QMainWindow):
         
         if dialog.exec() == QDialog.Accepted:
             initial_dir = dialog.directory()
-            settings.setValue('file/open', initial_dir)
-            settings.sync()
+            self._settings.set_elf_path(initial_dir)
             elfName = str(dialog.selectedFiles()[0])
-            settings = QSettings()
-            settings.setValue('File/elf_file', elfName)
-            settings.sync()
+            self._settings.set_elf_file(elfName)
+            self._settings.sync()
             self.setWindowTitle(self._mainWindowTitle + '  -  ' + os.path.basename(elfName))
             self._pubSub.send_load_elf_file(elf_filename=elfName)
             self.statusBar().showMessage(elfName + ' ... Loading', 2000)
@@ -229,14 +229,17 @@ class MainWindow(QMainWindow):
         self.activateWindow()
 
     def _closeElf(self):
-        settings = QSettings()
-        settings.remove('File/elf_file')
+        self._settings.remove_elf_file()
         self._pubSub.send_close_elf_file()
 
     def _editMonitoredVariables(self):
         dialog = SelectSymbol(self._variables)
         dialog.exec()
 
+    def _editPreferences(self):
+        dialog = UserPreferences()
+        dialog.exec()
+      
     def _listener_elf_loaded(self, symbols):
         self._close_elf_file_menu.setEnabled(True)
         self._variables = symbols
