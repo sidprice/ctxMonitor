@@ -42,6 +42,17 @@ class Probe:
             if self._checkAck() == True:
                 break
 
+    def _loopForOK(self):
+        while True:
+            '''
+                Loop here reading resonses until "OK" is received
+            '''
+            response = self.getResponse()
+            if response != None:
+                if response == "OK":
+                    break
+                print(response, end=' ')
+
     def _calculateChecksum(self, inputString):
         asBytes = bytes(inputString, 'UTF-8')
         checksum = 0
@@ -203,15 +214,7 @@ class Probe:
             command = 'disable'
         command = 'tpwr ' + command
         self.sendCommand(command, True)
-        while True:
-            '''
-                    Loop here reading resonses until "OK" is received
-                '''
-            response = self.getResponse()
-            if response != None:
-                if response == "OK":
-                    break
-                print(response, end=' ')
+        _loopForOK()
 
 def demo():
     try:
