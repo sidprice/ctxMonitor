@@ -129,6 +129,7 @@ class UserPreferences(QtWidgets.QDialog):
 
     def _combineTabs(self):
         self._tabs = QTabWidget()
+        self._tabs.setTabShape(QTabWidget.Triangular)
         wrapper = QWidget()
         wrapper.setLayout(self._optionsWidget)
         self._tabs.addTab(wrapper, 'Options')
