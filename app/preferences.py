@@ -26,6 +26,8 @@ class Preferences(QSettings):
     file_elf = 'File/elf_file'
     path_elf = 'file/open'
     edit_pref_last_tab = 'edit/preferences/last_tab'
+    edit_pref_probe_port = 'edit/preferences/probe_port'
+    edit_pref_probe_power_target = 'edit/preferences/probe_power_target'
 
     def __init__(self):
         '''
@@ -65,5 +67,21 @@ class Preferences(QSettings):
 
     def set_preferences_last_tab(self, tab):
         self.setValue(self.edit_pref_last_tab, tab)
-    
 
+    def preferences_probe_port(self):
+        result = self.value(self.edit_pref_probe_port)
+        if result == None:
+            result = ''
+        return result
+    
+    def set_preferences_probe_port(self, port):
+        self.setValue(self.edit_pref_probe_port, port)
+    
+    def preferences_probe_power_target(self):
+        result = self.value(self.edit_pref_probe_power_target)
+        if result == None:
+            result = 0
+        return result
+
+    def set_preferences_probe_power_target(self, enable):
+        self.setValue(self.edit_pref_probe_power_target, enable)

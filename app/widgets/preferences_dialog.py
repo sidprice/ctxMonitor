@@ -42,14 +42,28 @@ class UserPreferences(QtWidgets.QDialog):
 
         self.setLayout(rootWidget)
 
-        self._settings = Preferences.getInstance()
-        activateTab = self._settings.preferences_last_tab()
-        self._tabs.setCurrentIndex(activateTab)
+        self._getCurrentPreferences()
 
-    def _okButtonPressed(self):
-        self._settings.set_preferences_last_tab(self._tabs.currentIndex())
+    def _getCurrentPreferences(self):
+        self._settings = Preferences.getInstance()
+        self._tabs.setCurrentIndex(self._settings.preferences_last_tab())  # select last used TAB
+        self._probePortText.setText(self._settings.preferences_probe_port())  #   probe port
+        if self._settings.preferences_probe_power_target() == 0:
+            state = Qt.CheckState.Unchecked
+        else:
+            state = Qt.CheckState.Checked
+        self._probeTpwrCheckbox.setCheckState(state)
+        
+
+    def _saveCurrentPreferences(self):
+        self._settings.set_preferences_last_tab(self._tabs.currentIndex())  # last TAB
+        self._settings.set_preferences_probe_port(self._probePortText.text())  # probe port
+        self._settings.set_preferences_probe_power_target(self._probeTpwrCheckbox.isChecked())
 
         self._settings.sync()
+
+    def _okButtonPressed(self):
+        self._saveCurrentPreferences()
         self.close()
 
     def _cancelButtonPressed(self):
