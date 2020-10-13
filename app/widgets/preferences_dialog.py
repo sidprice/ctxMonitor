@@ -76,15 +76,21 @@ class UserPreferences(QtWidgets.QDialog):
         self._portWidget.addWidget(self._probePortLabel)
         self._portWidget.addWidget(self._probePortText)
 
-        self._probeTpwrCheckbox = QCheckBox()  # Probe Power Target hcheckbox
-        self._probeTpwrCheckbox.setFixedWidth(100)
+        self._probeTpwrCheckbox = QCheckBox()  # Probe Power Target checkbox
+        self._probeTpwrCheckbox.setFixedWidth(225)
         self._probeTpwrCheckbox.setText('Power target')
+
+        self._probeTpwrWidget = QHBoxLayout()
+        self._probeTpwrWidget.setAlignment(Qt.AlignRight)
+        self._probeTpwrWidget.addWidget(self._probeTpwrCheckbox)
 
         self._probeOptionsWidget = QVBoxLayout()  # Place probe settings into vertical box
         wrapper = QWidget()
         wrapper.setLayout(self._portWidget)
         self._probeOptionsWidget.addWidget(wrapper)
-        self._probeOptionsWidget.addWidget(self._probeTpwrCheckbox)
+        wrapper = QWidget()
+        wrapper.setLayout(self._probeTpwrWidget)
+        self._probeOptionsWidget.addWidget(wrapper)
 
     def _createOptionsTabUi(self):
         self._optionDefaultRadixLabel = QLabel()  # default radix label
