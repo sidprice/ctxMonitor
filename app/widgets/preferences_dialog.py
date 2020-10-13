@@ -42,10 +42,11 @@ class UserPreferences(QtWidgets.QDialog):
 
         self.setLayout(rootWidget)
 
+        self._settings = Preferences.getInstance()
+
         self._getCurrentPreferences()
 
     def _getCurrentPreferences(self):
-        self._settings = Preferences.getInstance()
         self._tabs.setCurrentIndex(self._settings.preferences_last_tab())  # select last used TAB
         self._probePortText.setText(self._settings.preferences_probe_port())  #   probe port
         if self._settings.preferences_probe_power_target() == 0:
