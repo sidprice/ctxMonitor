@@ -25,6 +25,7 @@ class Preferences(QSettings):
     ##
     file_elf = 'File/elf_file'
     path_elf = 'file/open'
+    edit_pref_last_tab = 'edit/preferences/last_tab'
 
     def __init__(self):
         '''
@@ -55,3 +56,14 @@ class Preferences(QSettings):
     
     def set_elf_path(self, path):
         self.setValue(self.path_elf, path)
+    
+    def preferences_last_tab(self):
+        result = self.value(self.edit_pref_last_tab)
+        if result == None:
+            result = 0
+        return result
+
+    def set_preferences_last_tab(self, tab):
+        self.setValue(self.edit_pref_last_tab, tab)
+    
+

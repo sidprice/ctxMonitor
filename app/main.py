@@ -9,6 +9,7 @@ from ctx_pubsub import Ctx_PubSub
 from variable_manager import VariableManager
 from probe_manager import ProbeManager
 from widgets.symbol_select_dialog import SelectSymbol
+from widgets.preferences_dialog import UserPreferences
 from preferences import Preferences
 from widgets.variable_display import VariableDisplay
 import sys
@@ -39,7 +40,8 @@ class MainWindow(QMainWindow):
     _exitMenuName = 'Exit'
     #
     _editMenuName = 'Edit'
-    _addVariableMenuName = 'Edit Variables ...'
+    _editVariablesMenuName = 'Edit Variables ...'
+    _editPreferencesMenuName = 'Edit Preferences ...'
     #
     _helpMenuName = 'Help'
     _aboutMenuName = 'About'
@@ -108,7 +110,8 @@ class MainWindow(QMainWindow):
                 self._exitMenuName: self.close,
             },
             self._editMenuName: {
-                self._addVariableMenuName: self._editMonitoredVariables,
+                self._editVariablesMenuName: self._editMonitoredVariables,
+                self._editPreferencesMenuName: self._editPreferences,
             },
             self._helpMenuName: {
                 self._aboutMenuName: None,
@@ -130,7 +133,7 @@ class MainWindow(QMainWindow):
         #
         #   Edit menu items
         #
-        self._add_variable_menu = self._menu_items[self._editMenuName][self._addVariableMenuName]
+        self._add_variable_menu = self._menu_items[self._editMenuName][self._editVariablesMenuName]
         self._add_variable_menu.setEnabled(False)
         self._add_variable_menu.setStatusTip(self._addVariableTip)
         #
@@ -233,6 +236,10 @@ class MainWindow(QMainWindow):
         dialog = SelectSymbol(self._variables)
         dialog.exec()
 
+    def _editPreferences(self):
+        dialog = UserPreferences()
+        dialog.exec()
+      
     def _listener_elf_loaded(self, symbols):
         self._close_elf_file_menu.setEnabled(True)
         self._variables = symbols

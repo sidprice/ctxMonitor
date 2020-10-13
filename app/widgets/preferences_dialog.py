@@ -8,11 +8,13 @@ from PySide2 import QtWidgets
 from PySide2.QtCore import Qt
 from PySide2.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QTabWidget, QPushButton, QLabel, QLineEdit, QComboBox, QCheckBox
 
-# from ctx_timing import CtxTiming
+from ctx_timing import CtxTiming
+from preferences import Preferences
+
 
 
 class UserPreferences(QtWidgets.QDialog):
-
+    
     def __init__(self):
         super().__init__()
         self.setWindowTitle('User Preferences')
@@ -40,10 +42,14 @@ class UserPreferences(QtWidgets.QDialog):
 
         self.setLayout(rootWidget)
 
+        self._settings = Preferences.getInstance()
+        activateTab = self._settings.preferences_last_tab()
+        self._tabs.setCurrentIndex(activateTab)
+
     def _okButtonPressed(self):
-        #
-        #   TODO process preferences out of dialog
-        #
+        self._settings.set_preferences_last_tab(self._tabs.currentIndex())
+
+        self._settings.sync()
         self.close()
 
     def _cancelButtonPressed(self):
@@ -116,7 +122,7 @@ class UserPreferences(QtWidgets.QDialog):
 
         self._optionDefaultPeriodCombobox = QComboBox()  # default period combobox
         self._optionDefaultPeriodCombobox.setStyleSheet('font-size:12px')
-        # self._optionDefaultPeriodCombobox.addItems(CtxTiming.Periods)
+        #self._optionDefaultPeriodCombobox.addItems(CtxTiming.Periods)
 
         self._periodWidget = QHBoxLayout()  # default period layout widget
         self._periodWidget.setAlignment(Qt.AlignLeft)
