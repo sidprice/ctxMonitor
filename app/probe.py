@@ -214,7 +214,7 @@ class Probe:
             command = 'disable'
         command = 'tpwr ' + command
         self.sendCommand(command, True)
-        _loopForOK()
+        self._loopForOK()
 
 def demo():
     try:
