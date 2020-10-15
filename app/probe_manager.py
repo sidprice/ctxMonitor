@@ -66,11 +66,13 @@ class ProbeManager():
         #   And target power control requests
         #
         ##
+        self._pubSub.subscribe_probe_connect(self._listener_connect_to_probe)
         self._pubSub.subscribe_probe_target_control_power(self._listener_probe_target_power)
 
         self._settings = Preferences.getInstance()
 
-    def connect_to_probe(self):
+    def _listener_connect_to_probe(self):
+        isConnected = False
         try:
             port = self._settings.preferences_probe_port()
             if port != '':
@@ -96,13 +98,19 @@ class ProbeManager():
                 response = self._probe.getResponse()
                 if response != None:
                     if response == "OK":
+                        isConnected = True
                         break
+                    elif '0.0V' in response:
+                        break
+                    elif 'failed' in response:
+                        break;
                     print(response, end=' ')
             self._probe.sendCommand('vAttach;1', False)
             response = self._probe.getResponse()
             print(response)
         else:
             print('Connect failed')
+        self._pubSub.send_probe_connected(isConnected)
 
     def _listener_variable_changed(self, var):
         if var.monitored:

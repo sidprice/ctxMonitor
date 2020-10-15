@@ -181,7 +181,9 @@ class MainWindow(QMainWindow):
         #   Time to connect to the probe
         #
         #####
-        self._probeManager.connect_to_probe()
+        #self._probeManager.connect_to_probe()
+        self._pubSub.subscribe_probe_connected(self._listener_probe_connected)
+        self._pubSub.send_probe_connect()
 
     def _menu_setup(self, d, parent=None):
         k = {}
@@ -257,6 +259,12 @@ class MainWindow(QMainWindow):
             self._close_elf_file_menu.setEnabled(False)
         self._display.init()
 
+    def _listener_probe_connected(self, connectState):
+        message = 'Connected to probe'
+        if not connectState:
+            message = 'Failed to connect to probe'
+        self.statusBar().showMessage(message, 5000)       
+        pass
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
