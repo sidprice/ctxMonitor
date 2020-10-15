@@ -78,7 +78,7 @@ class Preferences(QSettings):
         self.setValue(self.edit_pref_probe_port, port)
     
     def preferences_probe_power_target(self):
-        result = self.value(self.edit_pref_probe_power_target)
+        result = self.value(self.edit_pref_probe_power_target, type=bool)
         if result == None:
             result = 0
         return result
