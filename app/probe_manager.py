@@ -66,7 +66,7 @@ class ProbeManager():
         #   And target power control requests
         #
         ##
-        self._pubSub.subscribe_probe_target_power(self._listener_probe_target_power)
+        self._pubSub.subscribe_probe_target_control_power(self._listener_probe_target_power)
 
         self._settings = Preferences.getInstance()
 

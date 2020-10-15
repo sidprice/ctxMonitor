@@ -68,7 +68,16 @@ TOPIC_VARIABLE_CONTENT_CHANGED = 'root.variable_content_changed'
 #   Control target power
 #
 ###
-TOPIC_PROBE_TARGET_POWER = 'root.probe.target.power'
+TOPIC_PROBE_CONTROL_TARGET_POWER = 'root.probe.control.target.power'
+
+###
+#
+#   Target power detected
+#
+#       Reports if the target has valid power
+#
+TOPIC_PROBE_TARGET_HAS_POWER = 'root.probe.target.has.power'
+
 
 class Ctx_PubSub():
     __instance = None
@@ -139,13 +148,13 @@ class Ctx_PubSub():
     #
     def send_variable_content_changed(self, variable):
         pub.sendMessage(TOPIC_VARIABLE_CONTENT_CHANGED, var=variable)
-    
+
     ###
     #
     #   Control the target power
     #
-    def send_probe_target_power(self, enable):
-        pub.sendMessage(TOPIC_PROBE_TARGET_POWER, tpwr_enable=enable)
+    def send_probe_target_control_power(self, enable):
+        pub.sendMessage(TOPIC_PROBE_CONTROL_TARGET_POWER, tpwr_enable=enable)
 
    ##########
     #
@@ -194,13 +203,21 @@ class Ctx_PubSub():
     #
     def subscribe_variable_content_changed(self, listener):
         pub.subscribe(listener, TOPIC_VARIABLE_CONTENT_CHANGED)
-    
+
     ###
     #
     #   Subscribe to target power control
     #
-    def subscribe_probe_target_power(self, listener):
-        pub.subscribe(listener, TOPIC_PROBE_TARGET_POWER)
+    def subscribe_probe_target_control_power(self, listener):
+        pub.subscribe(listener, TOPIC_PROBE_CONTROL_TARGET_POWER)
+
+    ###
+    #
+    #   Subscribe to target has power
+    #
+    def subscribe_probe_target_has_power(self, listener):
+        pub.subscribe(listener, TOPIC_PROBE_TARGET_HAS_POWER)
+
 
 def myElf_Listener(elf_file):
     print(elf_file)
