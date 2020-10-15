@@ -65,9 +65,20 @@ TOPIC_VARIABLE_CONTENT_CHANGED = 'root.variable_content_changed'
 
 ###
 #
+#   Connect to the target
+#
+TOPIC_PROBE_CONNECT = 'root.probe.connect'
+
+###
+#
+#   Probe connected
+#
+TOPIC_PROBE_CONNECTED = 'root.probe.connected'
+
+###
+#
 #   Control target power
 #
-###
 TOPIC_PROBE_CONTROL_TARGET_POWER = 'root.probe.control.target.power'
 
 ###
@@ -151,6 +162,20 @@ class Ctx_PubSub():
 
     ###
     #
+    #   Request connection to probe
+    #
+    def send_probe_connect(self):
+        pub.sendMessage(TOPIC_PROBE_CONNECT)
+
+    ###
+    #
+    #   Send probe connection state
+    #
+    def send_probe_connected(self, state):
+        pub.sendMessage(TOPIC_PROBE_CONNECTED, connectState=state)
+        
+    ###
+    #
     #   Control the target power
     #
     def send_probe_target_control_power(self, enable):
@@ -204,6 +229,18 @@ class Ctx_PubSub():
     def subscribe_variable_content_changed(self, listener):
         pub.subscribe(listener, TOPIC_VARIABLE_CONTENT_CHANGED)
 
+    ###
+    #
+    #   Subscribe probe connect
+    #
+    def subscribe_probe_connect(self, listener):
+        pub.subscribe(listener, TOPIC_PROBE_CONNECT)
+    ###
+    #
+    #   Subscribe to probe connected
+    #
+    def subscribe_probe_connected(self, listener):
+        pub.subscribe(listener, TOPIC_PROBE_CONNECTED)
     ###
     #
     #   Subscribe to target power control
