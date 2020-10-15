@@ -63,6 +63,13 @@ TOPIC_VARIABLE_CHANGED = 'root.variable_changed'
 #
 TOPIC_VARIABLE_CONTENT_CHANGED = 'root.variable_content_changed'
 
+###
+#
+#   Control target power
+#
+###
+TOPIC_PROBE_TARGET_POWER = 'root.probe.target.power'
+
 class Ctx_PubSub():
     __instance = None
 
@@ -132,6 +139,13 @@ class Ctx_PubSub():
     #
     def send_variable_content_changed(self, variable):
         pub.sendMessage(TOPIC_VARIABLE_CONTENT_CHANGED, var=variable)
+    
+    ###
+    #
+    #   Control the target power
+    #
+    def send_probe_target_power(self, enable):
+        pub.sendMessage(TOPIC_PROBE_TARGET_POWER, tpwr_enable=enable)
 
    ##########
     #
@@ -180,6 +194,13 @@ class Ctx_PubSub():
     #
     def subscribe_variable_content_changed(self, listener):
         pub.subscribe(listener, TOPIC_VARIABLE_CONTENT_CHANGED)
+    
+    ###
+    #
+    #   Subscribe to target power control
+    #
+    def subscribe_probe_target_power(self, listener):
+        pub.subscribe(listener, TOPIC_PROBE_TARGET_POWER)
 
 def myElf_Listener(elf_file):
     print(elf_file)
