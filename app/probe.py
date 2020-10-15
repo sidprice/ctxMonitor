@@ -208,13 +208,16 @@ class Probe:
         print(f'Memory address {hex(address)} contains {value}')
         return value
 
-    def powerTarget(self, enable):
-        command = 'enable'
-        if enable == 0:
+    def powerTarget(self, enableTpwr):
+        print(enableTpwr)
+        if enableTpwr == True:
+            command = 'enable'
+        else:
             command = 'disable'
-        command = 'tpwr ' + command
-        self.sendCommand(command, True)
+
+        self.sendCommand('tpwr ' + command)
         self._loopForOK()
+
 
 def demo():
     try:
