@@ -239,6 +239,12 @@ class MainWindow(QMainWindow):
     def _editPreferences(self):
         dialog = UserPreferences()
         dialog.exec()
+        if dialog.result() == QDialog.Accepted:
+            #
+            #   User may have changed the target power, so update the probe
+            #
+            tpwr_enable = self._settings.preferences_probe_power_target()
+            self._pubSub.send_probe_target_power(enable=tpwr_enable)
       
     def _listener_elf_loaded(self, symbols):
         self._close_elf_file_menu.setEnabled(True)

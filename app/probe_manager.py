@@ -61,6 +61,12 @@ class ProbeManager():
         ###
         self._pubSub = Ctx_PubSub.getInstance()
         self._pubSub.subscribe_variable_changed(self._listener_variable_changed)
+        ##
+        #
+        #   And target power control requests
+        #
+        ##
+        self._pubSub.subscribe_probe_target_power(self._listener_probe_target_power)
 
         self._settings = Preferences.getInstance()
 
@@ -124,6 +130,9 @@ class ProbeManager():
             if (found == False):
                 self._monitored_variables[var.name] = var.copy()
             self._updateMonitorTimers()
+
+    def _listener_probe_target_power(self, tpwr_enable):
+        self._probe.powerTarget(tpwr_enable)
 
     def _updateMonitorTimers(self):
         self._monitor_timers = {}

@@ -65,10 +65,10 @@ class UserPreferences(QtWidgets.QDialog):
 
     def _okButtonPressed(self):
         self._saveCurrentPreferences()
-        self.close()
+        self.accept()
 
     def _cancelButtonPressed(self):
-        self.close()
+        self.reject()
 
     def _createDialogButtons(self):
         self._ok_button = QPushButton('OK')
