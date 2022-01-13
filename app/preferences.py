@@ -71,7 +71,7 @@ class Preferences(QSettings):
     def preferences_probe_port(self):
         result = self.value(self.edit_pref_probe_port)
         if result == None:
-            result = ''
+            result = 'COM5'
         return result
     
     def set_preferences_probe_port(self, port):
