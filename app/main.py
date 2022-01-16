@@ -188,10 +188,20 @@ class MainWindow(QMainWindow):
 
         #####
         #
+        #   Check we have the minimum preferences set in order to run, if
+        #   not, open the preferences dialog to get them set.
+        #
+        #####
+
+        self._settings = Preferences.getInstance()
+        comPort = self._settings.preferences_probe_port()
+        if ( comPort == ''):    # must have a comm port
+            self._editPreferences()
+        #####
+        #
         #   If we have previously loaded an ELF file, load it again
         #
         #####
-        self._settings = Preferences.getInstance()
         elf_file = self._settings.elf_file()
         if (elf_file != None):
             self._pubSub.send_load_elf_file(elf_filename=elf_file)

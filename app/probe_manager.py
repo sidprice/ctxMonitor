@@ -155,7 +155,8 @@ class ProbeManager():
             self._updateMonitorTimers()
 
     def _listener_probe_target_power(self, tpwr_enable):
-        self._probe.powerTarget(tpwr_enable)
+        if not self._probe == None:
+            self._probe.powerTarget(tpwr_enable)
 
     def _updateMonitorTimers(self):
         self._monitor_timers = {}
