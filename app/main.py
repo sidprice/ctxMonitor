@@ -18,6 +18,8 @@
 #   Main module for ctxMonitor
 #
 ##########################################################################import ctypes
+
+import ctypes
 from PySide2.QtGui import QIcon
 from PyQt5.QtCore import QCoreApplication
 from PySide2.QtWidgets import QApplication, QWidget, QMainWindow, QMenuBar, QMenu, QAction, QFileDialog, QDialog, QTableWidgetItem, QStatusBar, QGridLayout
