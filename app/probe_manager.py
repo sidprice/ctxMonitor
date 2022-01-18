@@ -96,7 +96,7 @@ class ProbeManager():
                 pass    # TODO handle no port set up
         except:
             return  # TODO handle error
-        if (self._probe.Connect()):
+        if (self._probe.Sync()):
             print('Connected')
             if self._settings.preferences_probe_power_target() != 0:
                 self._probe.powerTarget(True)

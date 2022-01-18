@@ -32,7 +32,8 @@ class Probe:
         super().__init__()
 
         try:
-            self.serial = serial.Serial(connection, 115200, timeout=10)
+            self.serial = serial.Serial(connection, 115200, timeout=5)
+            self.serial.flush()
         except serial.SerialException:
             raise
 
@@ -189,8 +190,19 @@ class Probe:
         output = f'{packet}#{checksumString}'
         self.sendPacket(output)
 
-    # TODO Is this needed and if so, is this the way to check it
-    def Connect(self):
+    #
+    #   This method is called at the Probe startup in order to synchronize the 
+    #   protocol.
+    #
+    def Sync(self):
+        #
+        #   Send a couple of "+" charcaters
+        #
+        # sleep(1)
+        # self._sendAck() ;
+        # sleep(1)
+        self.serial.flush()
+        # self._sendAck()
         response = self._readInput()
         self.connected = response == self._OK
         return self.connected
@@ -241,8 +253,8 @@ class Probe:
 
 def demo():
     try:
-        probe = Probe('COM12')
-        if probe.Connect() == True:
+        probe = Probe('COM5')
+        if probe.Sync() == True:
             probe.sendCommand('s')
             while True:
                 '''
@@ -271,11 +283,31 @@ def demo():
             # result = utilities.integerToHexDisplayValue(value)
 
             # print(f'Memory address 0x20000000 contains {result}')
+            probe.Disconnect()
+            sleep(2)
         else:
-            print('Failed to connect')
+            print('Failed to sync with Probe')
+            probe.flush()
     except Exception as ex:
         print(ex)
 
+def Serial_Connect_Test():
+    #
+    #   when monitoring the USB serial output with BMP driven from GDB, the
+    #   first data transaction is GDB sending "+".
+    #   This function does that so we can monitor BMP reaction.
+    #
+    try:
+        probe = Probe('COM5')
+        probe._sendAck()
+        sleep(5)
+    except Exception as ex:
+        print(ex)
+        sleep(5)
+    
 
 if __name__ == '__main__':
-    demo()
+    while (True):
+        # demo()
+        Serial_Connect_Test()
+
