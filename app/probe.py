@@ -50,6 +50,12 @@ class Probe:
             result = False
         return result
 
+    def Disconnect(self):
+        self.serial.close()
+
+    def flush(self):
+        self.serial.flush()
+
     def _sendPacket(self, packet):
         '''
             Send the passed packet to the probe and wait for an
@@ -229,9 +235,9 @@ class Probe:
 
     def readMemory_32(self, address):
         #command = f'm{format(address, "x")},4'
-        command = f'm{address},4'
+        command = f'm{address, "x"},4'
         value = self._memoryRead(command)
-        print(f'Memory address {address} contains {value}')
+        print(f'Memory address {hex(address)} contains {value}')
         return value
 
     def readMemory_64(self, address):
@@ -268,10 +274,10 @@ def demo():
             probe.sendCommand('vAttach;1', False)
             response = probe.getResponse()
 
-            # probe.readMemory_8(0x20000000)
-            # probe.readMemory_16(0x20000000)
+            probe.readMemory_8(0x20000000)
+            probe.readMemory_16(0x20000000)
             probe.readMemory_32(0x20000000)
-            # probe.readMemory_64(0x20000000)
+            probe.readMemory_64(0x20000000)
 
 
 
