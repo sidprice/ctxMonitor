@@ -120,6 +120,7 @@ class ProbeManager():
                     elif 'failed' in response:
                         break;
                     print(response, end=' ')
+            self._probe.sendCommand("no_halt en")
             self._probe.sendCommand('vAttach;1', False)
             response = self._probe.getResponse()
             print(response)
