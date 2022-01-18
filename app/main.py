@@ -214,6 +214,10 @@ class MainWindow(QMainWindow):
         #####
         #self._probeManager.connect_to_probe()
         self._pubSub.subscribe_probe_connected(self._listener_probe_connected)
+        self._settings = Preferences.getInstance()
+        comPort = self._settings.preferences_probe_port()
+        if ( comPort == ''):    # must have a comm port
+            return
         self._pubSub.send_probe_connect()
 
     def _menu_setup(self, d, parent=None):
