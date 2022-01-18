@@ -52,6 +52,10 @@ class Preferences(QSettings):
             raise Exception('This class is a singleton')
         else:
             super().__init__()
+            #
+            # For testing purposes clear the settings
+            #
+            # self.clear()
             Preferences.__instance = self
     ##########
     #
