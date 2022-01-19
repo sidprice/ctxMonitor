@@ -23,7 +23,7 @@ import serial
 import binascii
 import utilities
 
-
+COMM_PORT = "COM16"
 class Probe:
     _OK = 'OK'
     connected = False
@@ -259,7 +259,7 @@ class Probe:
 
 def demo():
     try:
-        probe = Probe('COM5')
+        probe = Probe(COMM_PORT)
         if probe.Sync() == True:
             probe.sendCommand('s')
             while True:
@@ -304,7 +304,7 @@ def Serial_Connect_Test():
     #   This function does that so we can monitor BMP reaction.
     #
     try:
-        probe = Probe('COM5')
+        probe = Probe(COMM_PORT)
         probe._sendAck()
         sleep(5)
     except Exception as ex:
@@ -314,6 +314,6 @@ def Serial_Connect_Test():
 
 if __name__ == '__main__':
     while (True):
-        # demo()
-        Serial_Connect_Test()
+        demo()
+        # Serial_Connect_Test()
 
