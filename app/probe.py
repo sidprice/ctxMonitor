@@ -32,15 +32,13 @@ class Probe:
         super().__init__()
         try:
           while True:
-            self.serial = serial.Serial(connection, 115200, timeout=1)
-            # self.serial.flush()               
+            self.serial = serial.Serial(connection, 115200, timeout=1)           
             if self.Sync() == True:
                 break
             self.Disconnect()
             sleep(1)
 
         except serial.SerialException as ex:
-            # print(ex)
             raise
 
     def _sendAck(self):
@@ -143,8 +141,6 @@ class Probe:
         '''
         result = None
         inputCharacters = self.serial.read(1).decode('UTF-8')
-        if inputCharacters == '':
-            print('Problem')
         if inputCharacters == '$':
             while True:
                 lastCharacters = 2  # checksum length
@@ -207,16 +203,8 @@ class Probe:
     #   protocol.
     #
     def Sync(self):
-        #
-        #   Send a couple of "+" charcaters
-        #
-        # sleep(1)
-        # self._sendAck() ;
-        # sleep(1)
-        # self.serial.flush()
-        # self._sendAck()
         response = self._readInput()
-        # self.connected = response == self._OK
+        self.connected = response == self._OK
         self.connected = True
         return True
 
@@ -241,7 +229,6 @@ class Probe:
         return value
 
     def readMemory_32(self, address):
-        #command = f'm{format(address, "x")},4'
         command = f'm{address, "x"},4'
         value = self._memoryRead(command)
         print(f'Memory address {hex(address)} contains {value}')
@@ -254,7 +241,6 @@ class Probe:
         return value
 
     def powerTarget(self, enableTpwr):
-        print(enableTpwr)
         if enableTpwr == True:
             command = 'enable'
         else:
