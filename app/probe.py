@@ -19,6 +19,7 @@
 #
 ##########################################################################
 from time import sleep
+from unittest import result
 import serial
 import serial.tools.list_ports as SerialPorts
 import binascii
@@ -250,7 +251,24 @@ class Probe:
         self.sendCommand('tpwr ' + command)
         self._loopForOK()
 
+#
+# This function returns a list of debug probe ports
+# attached to the computer
+#
+BMP_VID = 7504
+BMP_PID = 24600
 
+def Probes():
+    results = list()
+    for port in SerialPorts.comports():
+        if (port.vid == BMP_VID) and (port.pid == BMP_PID):
+            #
+            # Only list BMP GDB Server
+            #
+            if "Black Magic GDB" in port.description:
+                results.append(port.device)
+    return results
+    
 def demo():
     try:
         probe = Probe(COMM_PORT)
@@ -306,14 +324,18 @@ def Serial_Connect_Test():
 
 if __name__ == '__main__':
     while (True):
+        results = list()
         # demo()    # Does memory reads
         # Serial_Connect_Test() # just connection testing
-        for port in SerialPorts.comports():
-            print(port.description)
-            print(port.device)
-            if port.vid != None:
-                print(hex(port.vid) + ":" + hex(port.pid))
-            if port.serial_number != None:
-                print(port.serial_number)
+        # for port in SerialPorts.comports():
+        #     if (port.vid == BMP_VID) and (port.pid == BMP_PID):
+        #         #
+        #         # Only list BMP GDB Server
+        #         #
+        #         if "Black Magic GDB" in port.description:
+        #             results.append(port.device)
+        results = Probes()
+        for result in results:
+            print(result)
             print()
 
