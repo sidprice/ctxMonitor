@@ -99,7 +99,6 @@ class ProbeManager():
             self._pubSub.send_probe_connected(False)
             return  # TODO handle error
         if (self._probe.Sync()):
-            print('Connected')
             if self._settings.preferences_probe_power_target() != 0:
                 self._probe.powerTarget(True)
             ###
@@ -125,7 +124,6 @@ class ProbeManager():
             self._probe.sendCommand("no_halt en")
             self._probe.sendCommand('vAttach;1', False)
             response = self._probe.getResponse()
-            print(response)
         else:
             print('Connect failed')
         self._pubSub.send_probe_connected(isConnected)
