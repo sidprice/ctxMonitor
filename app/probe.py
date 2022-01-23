@@ -23,18 +23,24 @@ import serial
 import binascii
 import utilities
 
-COMM_PORT = "COM16"
+COMM_PORT = "COM20"
 class Probe:
     _OK = 'OK'
     connected = False
 
     def __init__(self, connection):
         super().__init__()
-
         try:
-            self.serial = serial.Serial(connection, 115200, timeout=5)
-            self.serial.flush()
-        except serial.SerialException:
+          while True:
+            self.serial = serial.Serial(connection, 115200, timeout=1)
+            # self.serial.flush()               
+            if self.Sync() == True:
+                break
+            self.Disconnect()
+            sleep(1)
+
+        except serial.SerialException as ex:
+            # print(ex)
             raise
 
     def _sendAck(self):
@@ -207,11 +213,12 @@ class Probe:
         # sleep(1)
         # self._sendAck() ;
         # sleep(1)
-        self.serial.flush()
+        # self.serial.flush()
         # self._sendAck()
         response = self._readInput()
-        self.connected = response == self._OK
-        return self.connected
+        # self.connected = response == self._OK
+        self.connected = True
+        return True
 
     def _memoryRead(self, command):
         self.sendCommand(command, False)
@@ -260,40 +267,37 @@ class Probe:
 def demo():
     try:
         probe = Probe(COMM_PORT)
-        if probe.Sync() == True:
-            probe.sendCommand('s')
-            while True:
-                '''
-                    Loop here reading resonses until "OK" is received
-                '''
-                response = probe.getResponse()
-                if response != None:
-                    if response == "OK":
-                        break
-                    print(response, end=' ')
-            probe.sendCommand('vAttach;1', False)
+
+        probe.sendCommand('s')
+        while True:
+            '''
+                Loop here reading resonses until "OK" is received
+            '''
             response = probe.getResponse()
+            if response != None:
+                if response == "OK":
+                    break
+                print(response, end=' ')
+        probe.sendCommand('vAttach;1', False)
+        response = probe.getResponse()
 
-            probe.readMemory_8(0x20000000)
-            probe.readMemory_16(0x20000000)
-            probe.readMemory_32(0x20000000)
-            probe.readMemory_64(0x20000000)
+        probe.readMemory_8(0x20000000)
+        probe.readMemory_16(0x20000000)
+        probe.readMemory_32(0x20000000)
+        probe.readMemory_64(0x20000000)
 
 
 
-            # Read memory as a test
-            # probe.sendCommand('m20000000,4', False)
-            # value = probe.getResponse()
+        # Read memory as a test
+        # probe.sendCommand('m20000000,4', False)
+        # value = probe.getResponse()
 
-            # value = utilities.integerFromAsciiHex(value)
-            # result = utilities.integerToHexDisplayValue(value)
+        # value = utilities.integerFromAsciiHex(value)
+        # result = utilities.integerToHexDisplayValue(value)
 
-            # print(f'Memory address 0x20000000 contains {result}')
-            probe.Disconnect()
-            sleep(2)
-        else:
-            print('Failed to sync with Probe')
-            probe.flush()
+        # print(f'Memory address 0x20000000 contains {result}')
+        probe.Disconnect()
+        sleep(2)
     except Exception as ex:
         print(ex)
 
@@ -305,7 +309,8 @@ def Serial_Connect_Test():
     #
     try:
         probe = Probe(COMM_PORT)
-        probe._sendAck()
+        print("Synced")
+        #probe._sendAck()
         sleep(5)
     except Exception as ex:
         print(ex)
