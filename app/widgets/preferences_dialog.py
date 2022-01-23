@@ -23,10 +23,10 @@ from PySide2 import QtWidgets
 from PySide2.QtCore import Qt
 from PySide2.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QTabWidget, QPushButton, QLabel, QLineEdit, QComboBox, QCheckBox
 
-from ctx_timing import CtxTiming
+#from ctx_timing import CtxTiming
 from preferences import Preferences
 
-
+from probe import Probes
 
 class UserPreferences(QtWidgets.QDialog):
     
@@ -63,7 +63,10 @@ class UserPreferences(QtWidgets.QDialog):
 
     def _getCurrentPreferences(self):
         self._tabs.setCurrentIndex(self._settings.preferences_last_tab())  # select last used TAB
-        self._probePortText.setText(self._settings.preferences_probe_port())  #   probe port
+        probeDevice = self._settings.preferences_probe_port()
+        if probeDevice != "":
+            selindex = self._portCombo.findText(probeDevice)
+            self._portCombo.setCurrentIndex(selindex)
         if self._settings.preferences_probe_power_target() == 0:
             state = Qt.CheckState.Unchecked
         else:
@@ -73,7 +76,7 @@ class UserPreferences(QtWidgets.QDialog):
 
     def _saveCurrentPreferences(self):
         self._settings.set_preferences_last_tab(self._tabs.currentIndex())  # last TAB
-        self._settings.set_preferences_probe_port(self._probePortText.text())  # probe port
+        self._settings.set_preferences_probe_port(self._portCombo.currentText())  # probe port
         self._settings.set_preferences_probe_power_target(self._probeTpwrCheckbox.isChecked())
 
         self._settings.sync()
@@ -103,14 +106,23 @@ class UserPreferences(QtWidgets.QDialog):
         self._probePortLabel.setAlignment(Qt.AlignRight)
         self._probePortLabel.setText('Probe port:')
 
-        self._probePortText = QLineEdit()
-        self._probePortText.setFixedWidth(100)
-        self._probePortText.setAlignment(Qt.AlignRight)
+        # self._probePortText = QLineEdit()
+        # self._probePortText.setFixedWidth(100)
+        # self._probePortText.setAlignment(Qt.AlignRight)
 
+        #
+        #   Create a ComboBox to display/enter comm ports
+        #
+        self._portCombo = QComboBox()
+        probes = Probes()
+        for probe in probes:
+            self._portCombo.addItem(probe)
+        self._portCombo.setCurrentIndex(1)
         self._portWidget = QHBoxLayout()  # port layout widget
         self._portWidget.setAlignment(Qt.AlignLeft)
         self._portWidget.addWidget(self._probePortLabel)
-        self._portWidget.addWidget(self._probePortText)
+        self._portWidget.addWidget(self._portCombo)
+        # self._portWidget.addWidget(self._probePortText)
 
         self._probeTpwrCheckbox = QCheckBox()  # Probe Power Target checkbox
         self._probeTpwrCheckbox.setFixedWidth(225)
