@@ -23,7 +23,7 @@
 #
 ##########################################################################
 
-from PyQt5.QtCore import QSettings
+from PySide2.QtCore import QSettings
 
 class Preferences(QSettings):
     __instance = None

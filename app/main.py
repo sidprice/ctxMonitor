@@ -21,7 +21,7 @@
 
 import ctypes
 from PySide2.QtGui import QIcon
-from PyQt5.QtCore import QCoreApplication
+from PySide2.QtCore import QCoreApplication
 from PySide2.QtWidgets import QApplication, QWidget, QMainWindow, QMenuBar, QMenu, QAction, QFileDialog, QDialog, QTableWidgetItem, QStatusBar, QGridLayout
 from PySide2.QtWidgets import QLabel, QLineEdit, QPushButton
 from PySide2.QtUiTools import QUiLoader

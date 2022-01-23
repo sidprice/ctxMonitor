@@ -20,7 +20,7 @@
 #
 ##########################################################################
 
-from PyQt5.QtCore import QTime, QTimer
+from PySide2.QtCore import QTime, QTimer
 
 from ctx_pubsub import Ctx_PubSub
 from ctx_timing import CtxTiming
@@ -94,7 +94,9 @@ class ProbeManager():
                 self._probe = Probe(port)
             else:
                 pass    # TODO handle no port set up
-        except:
+        except Exception as ex:
+            print(ex)
+            self._pubSub.send_probe_connected(False)
             return  # TODO handle error
         if (self._probe.Sync()):
             print('Connected')
