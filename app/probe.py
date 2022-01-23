@@ -20,6 +20,7 @@
 ##########################################################################
 from time import sleep
 import serial
+import serial.tools.list_ports as SerialPorts
 import binascii
 import utilities
 
@@ -305,6 +306,14 @@ def Serial_Connect_Test():
 
 if __name__ == '__main__':
     while (True):
-        demo()
-        # Serial_Connect_Test()
+        # demo()    # Does memory reads
+        # Serial_Connect_Test() # just connection testing
+        for port in SerialPorts.comports():
+            print(port.description)
+            print(port.device)
+            if port.vid != None:
+                print(hex(port.vid) + ":" + hex(port.pid))
+            if port.serial_number != None:
+                print(port.serial_number)
+            print()
 
