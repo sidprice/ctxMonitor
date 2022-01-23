@@ -87,6 +87,12 @@ class ProbeManager():
         self._settings = Preferences.getInstance()
 
     def _listener_connect_to_probe(self):
+        #
+        #   If there is a probe already connected, disconnect from it
+        #   and connect the new probe
+        #
+        if self._probe != None:
+            self._probe.Disconnect()
         isConnected = False
         try:
             port = self._settings.preferences_probe_port()

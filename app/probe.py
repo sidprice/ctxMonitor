@@ -84,7 +84,6 @@ class Probe:
             if response != None:
                 if response == "OK":
                     break
-                print(response, end=' ')
 
     def _calculateChecksum(self, inputString):
         asBytes = bytes(inputString, 'UTF-8')
@@ -268,6 +267,12 @@ def Probes():
             if "Black Magic GDB" in port.description:
                 results.append(port.device)
     return results
+
+#
+#   Disconnect from the current Probe and conect to passed port
+#
+def Reconnect(newPort):
+    pass
     
 def demo():
     try:

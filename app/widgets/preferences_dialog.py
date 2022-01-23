@@ -24,9 +24,11 @@ from PySide2.QtCore import Qt
 from PySide2.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QTabWidget, QPushButton, QLabel, QLineEdit, QComboBox, QCheckBox
 
 #from ctx_timing import CtxTiming
+from ctx_pubsub import Ctx_PubSub
+
 from preferences import Preferences
 
-from probe import Probes
+from probe import Probes, Reconnect
 
 class UserPreferences(QtWidgets.QDialog):
     
@@ -58,14 +60,15 @@ class UserPreferences(QtWidgets.QDialog):
         self.setLayout(rootWidget)
 
         self._settings = Preferences.getInstance()
+        self._pubSub = Ctx_PubSub.getInstance()
 
         self._getCurrentPreferences()
 
     def _getCurrentPreferences(self):
         self._tabs.setCurrentIndex(self._settings.preferences_last_tab())  # select last used TAB
-        probeDevice = self._settings.preferences_probe_port()
-        if probeDevice != "":
-            selindex = self._portCombo.findText(probeDevice)
+        self._probeDevice = self._settings.preferences_probe_port()
+        if self._probeDevice != "":
+            selindex = self._portCombo.findText(self._probeDevice)
             self._portCombo.setCurrentIndex(selindex)
         if self._settings.preferences_probe_power_target() == 0:
             state = Qt.CheckState.Unchecked
@@ -77,12 +80,18 @@ class UserPreferences(QtWidgets.QDialog):
     def _saveCurrentPreferences(self):
         self._settings.set_preferences_last_tab(self._tabs.currentIndex())  # last TAB
         self._settings.set_preferences_probe_port(self._portCombo.currentText())  # probe port
+        #
+        # If the port changed then reconnect to new port
+        #
+        if self._probeDevice != self._portCombo.currentText():
+            Reconnect(self._portCombo.currentText())
         self._settings.set_preferences_probe_power_target(self._probeTpwrCheckbox.isChecked())
 
         self._settings.sync()
 
     def _okButtonPressed(self):
         self._saveCurrentPreferences()
+        self._pubSub.send_probe_connect()
         self.accept()
 
     def _cancelButtonPressed(self):
