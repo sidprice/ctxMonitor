@@ -70,8 +70,8 @@ class Probe:
             If a NAK is received, resend the packet
         '''
         output = packet.encode()
+        self.serial.write(output)
         while True:  # TODO Introduce a retry/fail count
-            self.serial.write(output)
             if self._checkAck() == True:
                 break
 
