@@ -123,7 +123,7 @@ class MainWindow(QMainWindow):
         self._menuBar = QMenuBar(self)
         self._statusBar = QStatusBar(self)
         self.setStatusBar(self._statusBar)
-
+        self._statusBarSetup()
         self._menu_items = self._menu_setup({
             self._fileMenuName: {
                 self._openElfFileMenuName: self._openElf,
@@ -219,6 +219,17 @@ class MainWindow(QMainWindow):
         if ( comPort == ''):    # must have a comm port
             return
         self._pubSub.send_probe_connect()
+
+    #
+    #   Set up the status bar controls
+    #
+    def _statusBarSetup(self):
+        self._statusBar.setStyleSheet('padding-top: 10px; padding-bottom: 15px')
+        self._connectionStatus = QLabel()
+        self._connectionStatus.setStyleSheet('border: 5; color: blue ;')
+        self._connectionStatus.setText("Status")
+        self._statusBar.reformat()
+        self._statusBar.addPermanentWidget(self._connectionStatus)
 
     def _menu_setup(self, d, parent=None):
         k = {}
