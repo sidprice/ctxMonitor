@@ -128,8 +128,11 @@ class ProbeManager():
                         break;
                     print(response, end=' ')
             self._probe.sendCommand("no_halt en")
+            response = self._probe.getResponse()    # Ignore the textual acknowledgement
+            print('Response ->' + response)
             self._probe.sendCommand('vAttach;1', False)
             response = self._probe.getResponse()
+            print('Response ->' + response)
         else:
             print('Connect failed')
         self._pubSub.send_probe_connected(isConnected)
