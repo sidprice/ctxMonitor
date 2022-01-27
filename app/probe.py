@@ -175,6 +175,7 @@ class Probe:
                 '''
                 asbytes = bytes.fromhex(inputResponse[1:])
                 inputResponse = asbytes.decode("ASCII")
+        self._sendAck()
         return inputResponse
 
     def sendCommand(self, command, isMonitorCommand=True):
