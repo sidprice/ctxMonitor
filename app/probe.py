@@ -330,8 +330,8 @@ def Serial_Connect_Test():
 
 if __name__ == '__main__':
     while (True):
-        results = list()
-        # demo()    # Does memory reads
+        # results = list()
+        demo()    # Does memory reads
         # Serial_Connect_Test() # just connection testing
         # for port in SerialPorts.comports():
         #     if (port.vid == BMP_VID) and (port.pid == BMP_PID):
@@ -340,8 +340,8 @@ if __name__ == '__main__':
         #         #
         #         if "Black Magic GDB" in port.description:
         #             results.append(port.device)
-        results = Probes()
-        for result in results:
-            print(result)
-            print()
+        # results = Probes()
+        # for result in results:
+        #     print(result)
+        #     print()
 
