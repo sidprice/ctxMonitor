@@ -25,7 +25,7 @@ import serial.tools.list_ports as SerialPorts
 import binascii
 import utilities
 
-COMM_PORT = "COM20"
+COMM_PORT = "COM16"
 class Probe:
     _OK = 'OK'
     connected = False
