@@ -231,7 +231,7 @@ class Probe:
         return value
 
     def readMemory_32(self, address):
-        command = f'm{address, "x"},4'
+        command = f'm{format(address, "x")},4'
         value = self._memoryRead(command)
         #print(f'Memory address {hex(address)} contains {value}')
         return value
