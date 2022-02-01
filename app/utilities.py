@@ -79,10 +79,18 @@ def integerFromAsciiHex(asciihex):
         contains non-hex digits, return 'None'
     '''
     #
-    # first correct the byte order to ssttuuvvwwxxyyzz
+    # get the length of the response and check if it is odd. If
+    # it is prepend a zero. This is needed because the processing
+    # that follows handles bytes at-a-time and both MS and LS nibbles
+    # are expected
     #
     length = len(asciihex)
-
+    if ((length % 2) != 0) :
+        asciihex = '0' + asciihex
+        length += 1
+    #
+    # first correct the byte order to ssttuuvvwwxxyyzz
+    #
     startIndex = 0
     value =''
     while (length):
