@@ -97,7 +97,10 @@ def integerFromAsciiHex(asciihex):
         value = asciihex[startIndex: startIndex + 2] + value
         startIndex += 2
         length -= 2
-
+    #
+    # Make the input string uppercase
+    #
+    value = value.upper()
     #
     # Iterate over the string of hex characters and
     # convert to integer
@@ -105,7 +108,11 @@ def integerFromAsciiHex(asciihex):
     result = 0
     for char in value:
         result *= 16
-        temp = ord(char) - 48
+        temp = ord(char)
+        if temp >= 0x41 :  # Is this A - F?
+            temp = (10 + (temp - 0x41))
+        else :
+            temp -= 0x30
         result += temp
     return result
 
