@@ -219,25 +219,25 @@ class Probe:
         return result
 
     def readMemory_8(self, address):
-        command = f'm{format(address, "x")},1'
+        command = f'm{address},1'
         value = self._memoryRead(command)
         #print(f'Memory address {hex(address)} contains {value}')
         return value
 
     def readMemory_16(self, address):
-        command = f'm{format(address, "x")},2'
+        command = f'm{address},2'
         value = self._memoryRead(command)
         #print(f'Memory address {hex(address)} contains {value}')
         return value
 
     def readMemory_32(self, address):
-        command = f'm{format(address, "x")},4'
+        command = f'm{address},4'
         value = self._memoryRead(command)
         #print(f'Memory address {hex(address)} contains {value}')
         return value
 
     def readMemory_64(self, address):
-        command = f'm{format(address, "x")},8'
+        command = f'm{address},8'
         value = self._memoryRead(command)
         #print(f'Memory address {hex(address)} contains {value}')
         return value
