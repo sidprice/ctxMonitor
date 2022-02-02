@@ -173,7 +173,8 @@ class MainWindow(QMainWindow):
         #
         ####
         self._display = VariableDisplay(self)
-        self.layout.addWidget(self._display, 0, 0)
+        self.layout.setMargin(0)
+        self.layout.addWidget(self._display)
 
         self.show()
 
