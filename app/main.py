@@ -295,11 +295,7 @@ class MainWindow(QMainWindow):
         self._display.init()
 
     def _listener_probe_connected(self, connectState):
-        message = 'Connected to probe'
-        if not connectState:
-            message = 'Failed to connect to probe'
-        self._statusBar.ShowMessage(message, 5000)       
-        pass
+        self._statusBar.ShowProbeState(connectState)
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
@@ -307,7 +303,7 @@ if __name__ == '__main__':
     QCoreApplication.setOrganizationName('Sid Price Design')
     QCoreApplication.setApplicationName('ctxMonitor v1.0')
     QCoreApplication.setOrganizationDomain('sidprice.com')
-    myappid = 'mycompany.myproduct.subproduct.version'  # arbitrary string
+    myappid = 'SidPriceDesign.ctx.ctxMonitor.0.1'  # arbitrary string
     ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
     window = MainWindow()
     app.exec_()
