@@ -298,7 +298,8 @@ class MainWindow(QMainWindow):
         message = 'Connected to probe'
         if not connectState:
             message = 'Failed to connect to probe'
-        self._statusBar.ShowMessage(message, 5000)       
+        self._statusBar.ShowMessage(message, 5000)   
+        self._statusBar.ShowProbeState(connectState)    
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
