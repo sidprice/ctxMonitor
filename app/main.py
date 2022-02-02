@@ -22,7 +22,7 @@
 import ctypes
 from PySide2.QtGui import QIcon
 from PySide2.QtCore import QCoreApplication
-from PySide2.QtWidgets import QApplication, QWidget, QMainWindow, QMenuBar, QMenu, QAction, QFileDialog, QDialog, QTableWidgetItem, QStatusBar, QGridLayout
+from PySide2.QtWidgets import QApplication, QWidget, QMainWindow, QMenuBar, QMenu, QAction, QFileDialog, QDialog, QTableWidgetItem,  QGridLayout
 from PySide2.QtWidgets import QLabel, QLineEdit, QPushButton
 from PySide2.QtUiTools import QUiLoader
 from PySide2.QtCore import QFile, QIODevice, Qt
@@ -32,6 +32,7 @@ from probe_manager import ProbeManager
 from widgets.symbol_select_dialog import SelectSymbol
 from widgets.preferences_dialog import UserPreferences
 from preferences import Preferences
+from ctx_StatusBar import CTX_StatusBar
 from widgets.variable_display import VariableDisplay
 import sys
 import os
@@ -121,9 +122,7 @@ class MainWindow(QMainWindow):
         self.resize(800, 600)
 
         self._menuBar = QMenuBar(self)
-        self._statusBar = QStatusBar(self)
-        self.setStatusBar(self._statusBar)
-        self._statusBarSetup()
+        self._statusBar = CTX_StatusBar(self)
         self._menu_items = self._menu_setup({
             self._fileMenuName: {
                 self._openElfFileMenuName: self._openElf,
@@ -206,7 +205,7 @@ class MainWindow(QMainWindow):
         if (elf_file != None):
             self._pubSub.send_load_elf_file(elf_filename=elf_file)
             self.setWindowTitle(self._mainWindowTitle + '  -  ' + os.path.basename(elf_file))
-            self.statusBar().showMessage(elf_file + ' ... Loading', 2000)
+            self._statusBar.ShowMessage(elf_file + ' ... Loading', 2000)
         #####
         #
         #   Time to connect to the probe
@@ -220,16 +219,6 @@ class MainWindow(QMainWindow):
             return
         self._pubSub.send_probe_connect()
 
-    #
-    #   Set up the status bar controls
-    #
-    def _statusBarSetup(self):
-        self._statusBar.setStyleSheet('padding-top: 10px; padding-bottom: 15px')
-        self._connectionStatus = QLabel()
-        self._connectionStatus.setStyleSheet('border: 5; color: blue ;')
-        self._connectionStatus.setText("Status")
-        self._statusBar.reformat()
-        self._statusBar.addPermanentWidget(self._connectionStatus)
 
     def _menu_setup(self, d, parent=None):
         k = {}
@@ -272,7 +261,7 @@ class MainWindow(QMainWindow):
             self._settings.sync()
             self.setWindowTitle(self._mainWindowTitle + '  -  ' + os.path.basename(elfName))
             self._pubSub.send_load_elf_file(elf_filename=elfName)
-            self.statusBar().showMessage(elfName + ' ... Loading', 2000)
+            self._statusBar.showMessage(elfName + ' ... Loading', 2000)
 
         self.activateWindow()
 
@@ -309,7 +298,7 @@ class MainWindow(QMainWindow):
         message = 'Connected to probe'
         if not connectState:
             message = 'Failed to connect to probe'
-        self.statusBar().showMessage(message, 5000)       
+        self._statusBar.ShowMessage(message, 5000)       
         pass
 
 if __name__ == '__main__':
