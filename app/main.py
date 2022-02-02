@@ -295,7 +295,10 @@ class MainWindow(QMainWindow):
         self._display.init()
 
     def _listener_probe_connected(self, connectState):
-        self._statusBar.ShowProbeState(connectState)
+        message = 'Connected to probe'
+        if not connectState:
+            message = 'Failed to connect to probe'
+        self._statusBar.ShowMessage(message, 5000)       
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
